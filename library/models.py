@@ -7,9 +7,9 @@ class Book(models.Model):
     authors = models.ManyToManyField('Author')
     genre = models.ManyToManyField('Genre', null=True, blank=True)
     description = models.TextField(null=True,blank=True)
-    image = models.CharField(max_length=50)
+    image = models.CharField(max_length=200)
     pages = models.IntegerField(null=True,blank=True)
-    format = models.CharField(max_length=50, null=True, blank=True)
+    format = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.title
