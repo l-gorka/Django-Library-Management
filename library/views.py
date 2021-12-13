@@ -17,10 +17,11 @@ class BookListView(ListView):
             query = Q(title__icontains=search)
             query.add(Q(authors__name__icontains=search), Q.OR)
             query.add(Q(genre__genre_name__icontains=search), Q.OR)
-            book_list = Book.objects.filter(query).select_related()
+            book_list = Book.objects.filter(query).select_related().distinct()
         else:
             book_list = Book.objects.all()
             search = ''
+        query_length = len(book_list)
         paginator = Paginator(book_list, 100)
         try:
             books = paginator.page(page)
@@ -28,7 +29,7 @@ class BookListView(ListView):
             books = paginator.page(1)
         except EmptyPage:
             books = paginator.page(paginator.num_pages)
-        context = {'book_list': books, 'search': search}
+        context = {'book_list': books, 'search': search, 'query_length': query_length   }
         return render(request, self.template_name, context)
 
 

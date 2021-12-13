@@ -10,25 +10,37 @@
 
 {% extends 'base-menu.html' %}
 {% block content %}
-<div class=" container-lg">
+{% if search %}
+<div class="container-lg ">
+        <h1 class=" h1 ms-3 mt-3">Showing results for {{ search }}</h1>
+        <p class=" lead m-2 ms-3">Number of results: {{query_length}}</p>
+        {% else %}
+        <h1 class=" h1 ms-3 mt-3">Showing all books in database</h1>
+        <p class=" lead m-2 ms-3">Number of books: {{query_length}}</p>
+</div>
+{% endif %}
+<div class=" container-lg d-block d-md-flex">
     <form action="{% url 'library:book-list' %}" class=" " method="get">
-        <input type="search" placeholder="{{ search }}" class=" rounded-3 " name="search" >
+        <input type="search" placeholder="{{ search }}" class=" rounded-3 m-2" name="search">
         <button type="submit" value="Search" class=" btn btn-primary">Search</button>
     </form>
+    <p class=" lead m-2"> Type book title, author name or genre</p>
 </div>
 <div class="container-lg">
     <div class="grid">
+        <p class=" lead "></p>
         <div class="row justify-content-center">
-            <div class="col-12 col-lg-10">
-                <ul class=" list-group ">
+            <div class="col-12">
+                <ul class=" list-group border-0">
                     {% for book in book_list %}
                     {% if forloop.counter|divisibleby:2 %}
                     <li class=" list-group-item bg-light">
-                        <a href="{% url 'library:book-detail' book.id%}" class="">{{book.title}} - {{ book.authors.all|join:', '}}</a>
+                        <a href="{% url 'library:book-detail' book.id%}" class=" link-dark">{{book.title}} - {{book.authors.all|join:', '}}</a>
                     </li>
                     {% else %}
                     <li class=" list-group-item">
-                        <a href="{% url 'library:book-detail' book.id%}" class="">{{book.title}} - {{ book.authors.all|join:', '}}</a>
+                        <a href="{% url 'library:book-detail' book.id%}" class=" link-dark">{{book.title}} -
+                            {{book.authors.all|join:', '}}</a>
                     </li>
                     {% endif %}
                     {% endfor %}
