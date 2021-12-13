@@ -11,17 +11,23 @@
 {% extends 'base-menu.html' %}
 {% block content %}
 
-<div class="container-xxl">
+<div class="container-xxl"style='min-height: 85vh;'>
     <div class="">
-        <h1 class="h1 mx-auto my-3">{{ book.title }}</h1>
+        <h1 class="h1 mx-3 my-3">{{ book.title }}</h1>
     </div>
     <div class="grid">
-        <div class="row ">
-            <div class="col-12 col-md-6">
-
+        <div class="row justify-content-center justify-content-md-evenly">
+            <div class="col-12 col-md-8 mx-2">
+                <p class="">Author(s): {{ book.authors.all|join:', '}}</p>
+                <p class="">Genre: {{ book.genre.all|join:', '}}</p>
+                <p class="">Pages: {{ book.pages}}</p>
+                <p class="">Format: {{ book.format}}</p>
+                <p class="">{{ book.description}}</p>
+                
+    
             </div>
-            <div class="col-12 col-md-6">
-
+            <div class="col-12 col-md-3">
+                <img src="{{ book.image }}" alt="">
             </div>
         </div>
 

@@ -12,8 +12,8 @@
 {% block content %}
 <div class=" container-lg">
     <form action="{% url 'library:book-list' %}" class=" " method="get">
-        <input type="search" placeholder="{{ search }}" class="" name="search" >
-        <button type="submit" value="Search" class=" btn btn-primary"></button>
+        <input type="search" placeholder="{{ search }}" class=" rounded-3 " name="search" >
+        <button type="submit" value="Search" class=" btn btn-primary">Search</button>
     </form>
 </div>
 <div class="container-lg">
@@ -23,12 +23,12 @@
                 <ul class=" list-group ">
                     {% for book in book_list %}
                     {% if forloop.counter|divisibleby:2 %}
-                    <li class=" list-group-item">
-                        <a href="#" class="">{{book.title}} - {{ book.authors.all|join:', '}}</a>
+                    <li class=" list-group-item bg-light">
+                        <a href="{% url 'library:book-detail' book.id%}" class="">{{book.title}} - {{ book.authors.all|join:', '}}</a>
                     </li>
                     {% else %}
                     <li class=" list-group-item">
-                        <a href="#" class="">{{book.title}} - {{ book.authors.all|join:', '}}</a>
+                        <a href="{% url 'library:book-detail' book.id%}" class="">{{book.title}} - {{ book.authors.all|join:', '}}</a>
                     </li>
                     {% endif %}
                     {% endfor %}
