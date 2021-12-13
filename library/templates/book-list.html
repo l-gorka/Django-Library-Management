@@ -10,7 +10,6 @@
 
 {% extends 'base-menu.html' %}
 {% block content %}
-{{search}}
 <div class=" container-lg">
     <form action="{% url 'library:book-list' %}" class=" " method="get">
         <input type="search" placeholder="{{ search }}" class="" name="search" >
