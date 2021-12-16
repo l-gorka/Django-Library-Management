@@ -1,8 +1,11 @@
+from django.http import request
 from django.shortcuts import redirect, render
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import RegisterForm
+from django.contrib.auth import views as auth_views
+
 # Create your views here.
 
 def register(request):
@@ -24,3 +27,12 @@ def register(request):
             form = RegisterForm()
             
         return render(request, 'register.html', {'form': form})
+
+class Login(auth_views.LoginView):
+    template_name = 'login.html'
+    
+    def form_valid(self, form):
+        messages.success(self.request, f"Logged in!")
+        return super().form_valid(form)
+
+
