@@ -18,8 +18,14 @@
     <div class="grid">
         <div class="row justify-content-center justify-content-md-evenly">
             <div class="col-12 col-md-8 mx-2">
-                <p class="">Author(s): {{ book.authors.all|join:', '}}</p>
-                <p class="">Genre: {{ book.genre.all|join:', '}}</p>
+                <p class="">Author(s): {% for author in book.authors.all %} 
+                    <a href="{%url 'library:book-list'%}?search={{ author|urlencode }}">{{author}}{% if not forloop.last%}, {% else %} {% endif %}</a>
+                    {% endfor %}
+                </p>
+                <p class="">Genre: {% for genre in book.genre.all %} 
+                    <a href="{%url 'library:book-list'%}?search={{ genre|urlencode }}">{{genre}}{% if not forloop.last%}, {% else %} {% endif %}</a>
+                    {% endfor %}
+                </p>
                 <p class="">Pages: {{ book.pages}}</p>
                 <p class="">Format: {{ book.format}}</p>
                 <p class="">{{ book.description}}</p>
