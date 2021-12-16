@@ -3,9 +3,10 @@ from django.views.generic import ListView, DetailView
 from django.db.models import Q
 from library.models import Book
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class BookListView(ListView):
+class BookListView(LoginRequiredMixin, ListView):
     model = Book
     template_name = 'book-list.html'
 
