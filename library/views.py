@@ -4,11 +4,18 @@ from django.db.models import Q
 from library.models import Book
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 
 class BookListView(LoginRequiredMixin, ListView):
     model = Book
     template_name = 'book-list.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.warning(request, f'You must be logged in to access the book list.')
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
         page = request.GET.get('page', 1)

@@ -32,7 +32,7 @@ class Login(auth_views.LoginView):
     template_name = 'login.html'
     
     def form_valid(self, form):
-        messages.success(self.request, f"Logged in!")
+        messages.success(self.request, f"Logged in")
         return super().form_valid(form)
 
 
