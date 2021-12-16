@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.urls.conf import include
 from django.views.generic.base import TemplateView
+from users import views as user_views
 
 import library
 
@@ -24,4 +25,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('base/', TemplateView.as_view(template_name='base-menu.html'), name='base'),
     path('', include('library.urls', namespace='library')),
+    path('register/', user_views.register, name='register')
 ]
