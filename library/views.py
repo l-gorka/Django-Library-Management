@@ -41,6 +41,12 @@ class BookListView(LoginRequiredMixin, ListView):
         return render(request, self.template_name, context)
 
 
-class BookDetailView(DetailView):
+class BookDetailView(LoginRequiredMixin, DetailView):
     model = Book
     template_name = 'detail.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.warning(request, f'You must be logged in to access the book detail.')
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
