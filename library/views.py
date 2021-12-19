@@ -90,3 +90,30 @@ def order_create(request, **kwargs):
                 messages.warning(request, f'This book is not aviable right now.')
                 return redirect('library:book-list')
 
+class UserReserved(LoginRequiredMixin, ListView):
+    model = BookItem
+    template_name = 'user-reserved.html'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return BookItem.objects.filter(issued_to=self.request.user)
+
+class UserOnLoan(LoginRequiredMixin, ListView):
+    model = BookItem
+    template_name = 'user-on-loan.html'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return BookItem.objects.filter(issued_to=self.request.user)
+
+class UserReturned(LoginRequiredMixin, ListView):
+    model = BookItem
+    template_name = 'user-returned.html'
+    paginate_by = 20
+
+    def get_queryset(self):
+        return BookItem.objects.filter(issued_to=self.request.user)
+
+
+
+    

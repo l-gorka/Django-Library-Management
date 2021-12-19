@@ -46,6 +46,7 @@ class Order(models.Model):
     item = models.ForeignKey('BookItem', on_delete=models.CASCADE)
     status = models.IntegerField(choices=StatusChoices.choices, max_length=50)
     pick_up_site = models.ForeignKey('PickUpSite', null=True, on_delete=models.SET_NULL)
+    
 
     def __str__(self) -> str:
         return f'Order no. {self.pk} - The user {self.user} ordered {self.item} '
