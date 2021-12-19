@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 from django.db.models import Q
-from library.models import Book
+from library.models import Book, BookItem
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -45,8 +45,20 @@ class BookDetailView(LoginRequiredMixin, DetailView):
     model = Book
     template_name = 'detail.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        b = BookItem.objects.filter(book_item=self.kwargs['pk'])
+        context['items'] = b
+        n = BookItem.objects.filter(book_item=self.kwargs['pk'])
+        context['number'] = len(n)
+        return context
+        
+
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             messages.warning(request, f'You must be logged in to access the book detail.')
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
+
+class OrderView(LoginRequiredMixin, CreateView):
+    pass

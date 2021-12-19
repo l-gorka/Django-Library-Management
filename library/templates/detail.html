@@ -10,37 +10,62 @@
 
 {% extends 'base-menu.html' %}
 {% block content %}
+    <div class="container-xxl" style="min-height: 83vh;">
+        <div class="">
+            <h1 class="h1 mx-3 my-3">{{ book.title }}</h1>
+        </div>
+        <div class="grid">
+            <div class="row justify-content-center justify-content-md-evenly">
+                <div class="col-12 col-md-8 mx-2">
+                    <p class="">Author(s): {% for author in book.authors.all %}
+                        <a href="{%url 'library:book-list'%}?search={{ author|urlencode }}">{{author}}{% if notforloop.last%}, {% else %} {% endif %}</a>
+                        {% endfor %}
+                    </p>
+                    <p class="">Genre: {% for genre in book.genre.all %}
+                        <a href="{%url 'library:book-list'%}?search={{ genre|urlencode }}">{{genre}}{% if notforloop.last%}, {% else %} {% endif %}</a>
+                        {% endfor %}
+                    </p>
+                    <p class="">Pages: {{ book.pages }}</p>
+                    <p class="">Format: {{ book.format }}</p>
+                    <p class="">ISBN: {{ book.isbn }}</p>
+                    <p class="">{{ book.description }}</p>
 
-<div class="container-xxl"style='min-height: 85vh;'>
-    <div class="">
-        <h1 class="h1 mx-3 my-3">{{ book.title }}</h1>
-    </div>
-    <div class="grid">
-        <div class="row justify-content-center justify-content-md-evenly">
-            <div class="col-12 col-md-8 mx-2">
-                <p class="">Author(s): {% for author in book.authors.all %} 
-                    <a href="{%url 'library:book-list'%}?search={{ author|urlencode }}">{{author}}{% if not forloop.last%}, {% else %} {% endif %}</a>
-                    {% endfor %}
-                </p>
-                <p class="">Genre: {% for genre in book.genre.all %} 
-                    <a href="{%url 'library:book-list'%}?search={{ genre|urlencode }}">{{genre}}{% if not forloop.last%}, {% else %} {% endif %}</a>
-                    {% endfor %}
-                </p>
-                <p class="">Pages: {{ book.pages}}</p>
-                <p class="">Format: {{ book.format}}</p>
-                <p class="">{{ book.description}}</p>
+
+                </div>
+                <div class="col-12 col-md-3">
+                    <img src="{{ book.image }}" alt="">
+                </div>
                 
-    
             </div>
-            <div class="col-12 col-md-3">
-                <img src="{{ book.image }}" alt="">
+
+        </div>
+        <div class="grid">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-11">
+                    {% if number %}
+                    <p class="">There {{number|pluralize:'is,are'}} {{number}} cop{{number|pluralize:"y,ies"}} of this book in our library.</p>
+                    {% else %}
+                    <p class="">All copies of this book are currently loaned.</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <ul class="list-group">
+                        {% for item in items  %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Id: {{ item.pk }} {{ item.book_item }} {{ item.issued_to }}</span>
+                                {% if item.issued_to == None %}
+                                <button class=" btn btn-sm btn-primary">Request</button>
+                                {% else %}
+                                not aviable
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                      </ul>
+                </div>
             </div>
         </div>
 
     </div>
-
-</div>
-
 
 
 {% endblock content %}

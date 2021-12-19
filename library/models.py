@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.deletion import SET_NULL
 
 # Create your models here.
 
@@ -17,33 +18,38 @@ class Book(models.Model):
     def __str__(self) -> str:
         return self.title
 
-class BookCopy(models.Model):
-    copy_book = models.ForeignKey('Book', on_delete=models.CASCADE)
+
+class BookItem(models.Model):
+    book_item = models.ForeignKey('Book', on_delete=models.CASCADE)
+    issued_to = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    issue_date = models.DateField(null=True)
+    expiry_date = models.DateField(null=True)
+
+    class Meta():
+        verbose_name_plural = 'Book copies'
 
     def __str__(self) -> str:
         id = str(self.pk)
-        name = self.copy_book
+        name = self.book_item
         return f'{id} {name}'
 
 
-class Loan(models.Model):
-    loan_book = models.ForeignKey('BookCopy', on_delete=models.CASCADE)
-    loan_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_starts = models.DateField(auto_now_add=True)
-    date_ends = models.DateField()
-
-    def __str__(self):
-        return f'{self.loan_user} borrowed {self.loan_book}'
+class StatusChoices(models.IntegerChoices):
+    pending = 0, 'Pending'
+    ready = 1, 'Ready to pick up'
+    picked_up = 2, 'Picked up'
+    returned = 3, 'Returned'
 
 
-class Reservation(models.Model):
-    reservation_book = models.ForeignKey('BookCopy', on_delete=models.CASCADE)
-    reservation_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    pick_up_site = models.ForeignKey('PickUpSite', on_delete=models.CASCADE)
-    date_reserved = models.DateField(auto_now_add=True)
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey('BookItem', on_delete=models.CASCADE)
+    status = models.IntegerField(choices=StatusChoices.choices, max_length=50)
+    pick_up_site = models.ForeignKey('PickUpSite', null=True, on_delete=models.SET_NULL)
 
-    def __str__(self):
-        return f'{self.reservation_user} reserved {self.reservation_book}'
+    def __str__(self) -> str:
+        return f'Order no. {self.pk} - The user {self.user} ordered {self.item} '
+
 
 class PickUpSite(models.Model):
     site = models.CharField(max_length=200)
