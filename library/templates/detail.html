@@ -9,14 +9,15 @@
 </head>
 
 {% extends 'base-menu.html' %}
+{% load humanize %}
 {% block content %}
     <div class="container-xxl" style="min-height: 83vh;">
         <div class="">
-            <h1 class="h1 mx-3 my-3">{{ book.title }}</h1>
+            <h1 class="h1 mx-3 my-3 my-md-5 text-center">{{ book.title }}</h1>
         </div>
         <div class="grid">
             <div class="row justify-content-center justify-content-md-evenly">
-                <div class="col-12 col-md-8 mx-2">
+                <div class="col-12 col-sm-11 col-md-8 mx-2">
                     <p class="">Author(s): {% for author in book.authors.all %}
                         <a href="{%url 'library:book-list'%}?search={{ author|urlencode }}">{{author}}{% if notforloop.last%}, {% else %} {% endif %}</a>
                         {% endfor %}
@@ -30,39 +31,42 @@
                     <p class="">ISBN: {{ book.isbn }}</p>
                     <p class="">{{ book.description }}</p>
 
-
                 </div>
-                <div class="col-12 col-md-3">
-                    <img src="{{ book.image }}" alt="">
+                <div class="col-12 col-md-3 d-none d-md-block">
+                    <img src="{{ book.image }}" class="image-fluid" style="max-width: 100%; height: auto;" alt="">
                 </div>
-                
-            </div>
-
-        </div>
-        <div class="grid">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-11">
-                    {% if number %}
-                    <p class="">There {{number|pluralize:'is,are'}} {{number}} cop{{number|pluralize:"y,ies"}} of this book in our library.</p>
-                    {% else %}
-                    <p class="">All copies of this book are currently loaned.</p>
-                    {% endif %}
-                </div>
-                <div>
+                <div class="col-12 col-sm-11 col-md-10 mt-2 mt-md-5 mb-3">
+                    <h3 class="my-2 my-md-3">Copies of this book in our library:</h3>
                     <ul class="list-group">
                         {% for item in items  %}
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>Id: {{ item.pk }} {{ item.book_item }} {{ item.issued_to }}</span>
+                            <li class="list-group-item d-sm-flex justify-content-between">
+                                <span>Book ID: {{ item.pk }}</span>
                                 {% if item.issued_to == None %}
-                                <button class=" btn btn-sm btn-primary">Request</button>
+                    
+                                <form action="{%url 'library:order-create' item.pk %}" class=" form-control-sm m-0 p-0" method="POST">
+                                    {% csrf_token %}
+                                    <div class="d-flex">
+                                    <input type="hidden" name="pk" value="{{item.pk }}">
+                                    <select name="site" class=" form-select form-select-sm mx-2" id=book_item = BookItem.objects.get(pk=request.POST.get('pk'))"site">
+                                        {% for site in sites %}
+                                        <option value="{{ site.id }}">{{ site.site }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class=" btn btn-sm btn-primary">Request</button>
+                                    </div>
+                                </form>
+                    
                                 {% else %}
-                                not aviable
+                                <span>Book should be aviable at {{ item.expiry_date}}</span>
                                 {% endif %}
                             </li>
                         {% endfor %}
                       </ul>
+
                 </div>
+                
             </div>
+
         </div>
 
     </div>

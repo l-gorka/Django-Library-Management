@@ -1,11 +1,12 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView
+from django.shortcuts import redirect, render
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
-from library.models import Book, BookItem
+from django.views.generic.edit import UpdateView
+from library.models import Book, BookItem, Order, PickUpSite
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-
+from datetime import datetime, timedelta
 
 class BookListView(LoginRequiredMixin, ListView):
     model = Book
@@ -49,8 +50,8 @@ class BookDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         b = BookItem.objects.filter(book_item=self.kwargs['pk'])
         context['items'] = b
-        n = BookItem.objects.filter(book_item=self.kwargs['pk'])
-        context['number'] = len(n)
+        s = PickUpSite.objects.all()
+        context['sites'] = s
         return context
         
 
@@ -60,5 +61,32 @@ class BookDetailView(LoginRequiredMixin, DetailView):
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
 
-class OrderView(LoginRequiredMixin, CreateView):
-    pass
+
+def order_create(request, **kwargs):
+    if not request.user.is_authenticated:
+        messages.warning(request, f'You must be logged in to create an order.')
+        return redirect('login')
+    else:
+        if request.method == 'POST':
+            book_item = BookItem.objects.get(pk=request.POST.get('pk'))
+            if book_item.issued_to == None:
+                book_item = BookItem.objects.get(pk=request.POST.get('pk'))
+                book_item.issued_to = request.user
+                book_item.issue_date = datetime.date(datetime.now())
+                book_item.expiry_date = book_item.issue_date + timedelta(days=10)
+                
+
+                p_site = PickUpSite.objects.get(id=request.POST.get('site'))
+                order = Order.objects.create(
+                    user=request.user,
+                    item=book_item,
+                    status=0,
+                    pick_up_site=p_site,
+                )
+                book_item.save()
+                messages.success(request, f'Your request will be processed soon. Check mailbox')
+                return redirect('library:book-list')
+            else:
+                messages.warning(request, f'This book is not aviable right now.')
+                return redirect('library:book-list')
+
