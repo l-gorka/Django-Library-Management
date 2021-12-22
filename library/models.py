@@ -31,7 +31,7 @@ class BookItem(models.Model):
     def __str__(self) -> str:
         id = str(self.pk)
         name = self.book_item
-        return f'{id} {name}'
+        return f'{name}'
 
 
 class StatusChoices(models.IntegerChoices):
@@ -46,7 +46,9 @@ class Order(models.Model):
     item = models.ForeignKey('BookItem', on_delete=models.CASCADE)
     status = models.IntegerField(choices=StatusChoices.choices, max_length=50)
     pick_up_site = models.ForeignKey('PickUpSite', null=True, on_delete=models.SET_NULL)
-    
+    date_created = models.DateField()
+    date_expiry = models.DateField(null=True, blank=True)
+    date_returned = models.DateField(null=True, blank=True)
 
     def __str__(self) -> str:
         return f'Order no. {self.pk} - The user {self.user} ordered {self.item} '

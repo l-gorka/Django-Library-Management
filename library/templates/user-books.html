@@ -1,0 +1,143 @@
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+</head>
+{% extends 'base-menu.html' %}
+{% block content %}
+<div class="container-xl" style="min-height: 84vh;">
+    <h1 class=" h3 mt-4">Your books</h1>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="reserved-tab" data-bs-toggle="tab" data-bs-target="#reserved"
+                type="button" role="tab" aria-controls="reserved" aria-selected="true">Reserved</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="waiting-tab" data-bs-toggle="tab" data-bs-target="#waiting" type="button"
+                role="tab" aria-controls="waiting" aria-selected="false">Waiting for pick up</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="on-loan-tab" data-bs-toggle="tab" data-bs-target="#on-loan" type="button"
+                role="tab" aria-controls="on-loan" aria-selected="false">On loan</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active " id="reserved" role="tabpanel" aria-labelledby="reserved-tab">
+            <div class="grid">
+                <p class=" lead "></p>
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        <ul class=" list-group border-0">
+                            reserved
+                            {% if reserved %}
+                            {% for book in reserved %}
+                            <div class="card rounded-3 my-1 mx-2">
+                                <div class="grid">
+                                    <div class="row d-md-flex align-items-center">
+                                        <div class="col-2">
+                                            <span class="ms-1">ID:{{book.id}}</span>
+                                        </div>
+                                        <div class="col-4 border-start">
+                                            <span class=" text-truncate d-block">{{book.item}}</span>
+                                        </div>
+                                        <div class="col-4">
+                                            <span></span>Pick up site: {{book.pick_up_site}}</span>
+                                        </div>
+                                        <div class="col-2 my-2 text-end">
+                                            <form class="m-0 p-0"action="{% url 'library:order-delete' book.id %}" method="post">
+                                                {% csrf_token %}
+                                                <button class=" btn btn-sm btn-danger me-2">Cancel</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="waiting" role="tabpanel" aria-labelledby="waiting-tab">
+            <div class="grid">
+                <p class=" lead "></p>
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        <ul class=" list-group border-0">
+                            waiting
+                            {% if waiting %}
+                            {% for book in waiting %}
+                            <div class="card rounded-3 my-1 mx-2">
+                                <div class="grid">
+                                    <div class="row d-md-flex align-items-center">
+                                        <div class="col-2">
+                                            <span class="ms-1">ID:{{book.id}}</span>
+                                        </div>
+                                        <div class="col-4 border-start">
+                                            <span class=" text-truncate d-block">{{book.item}}</span>
+                                        </div>
+                                        <div class="col-4">
+                                            <span></span>Pick up site: {{book.pick_up_site}}</span>
+                                        </div>
+                                        <div class="col-2 my-2 text-end">
+                                            <form class="m-0 p-0"action="{% url 'library:order-delete' book.id %}" method="post">
+                                                {% csrf_token %}
+                                                <button class=" btn btn-sm btn-danger me-2">Cancel</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="on-loan" role="tabpanel" aria-labelledby="on-loan-tab">
+            <div class="grid">
+                <p class=" lead "></p>
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        <ul class=" list-group border-0">
+                            {% if on_loan %}
+                            {% for book in on_loan %}
+                            <div class="card rounded-3 my-1 mx-2">
+                                <div class="grid">
+                                    <div class="row d-md-flex align-items-center">
+                                        <div class="col-2">
+                                            <span class="ms-1">ID:{{book.id}}</span>
+                                        </div>
+                                        <div class="col-4 border-start">
+                                            <span class=" text-truncate d-block">{{book.item}}</span>
+                                        </div>
+                                        <div class="col-4">
+                                            <span></span>Pick up site: {{book.pick_up_site}}</span>
+                                        </div>
+                                        <div class="col-2 my-2 text-end">
+                                            <button class=" btn btn-sm btn-danger me-2">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock content %}
