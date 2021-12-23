@@ -1,12 +1,15 @@
+from django.contrib.messages.api import success
 from django.shortcuts import redirect, render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import DeleteView, UpdateView
 from library.models import Book, BookItem, Order, PickUpSite
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from datetime import datetime, timedelta
+from .functions import has_group
+from django.urls import reverse_lazy
 
 
 class BookListView(LoginRequiredMixin, ListView):
@@ -96,19 +99,10 @@ def order_create(request, **kwargs):
                     request, f'This book is not aviable right now.')
                 return redirect('library:book-list')
 
-def order_delete(request, **kwargs):
-    if not request.user.is_authenticated:
-        messages.warning(request, f'You must be logged in to create an order.')
-        return redirect('login')
-    else:
-        print('delete')
-        return redirect('library:user-books')
-
 
 class UserBooks(LoginRequiredMixin, ListView):
     model = Order
     template_name = 'user-books.html'
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -125,5 +119,28 @@ class UserBooks(LoginRequiredMixin, ListView):
         return context
 
 
-class UserUpdateOrder(LoginRequiredMixin, ListView):
-    pass
+class OrderDelete(LoginRequiredMixin, DeleteView):
+    model = Order
+    template_name = 'order-delete.html'
+    success_url = reverse_lazy('library:user-books')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.warning(
+                request, f'You must be logged in to delete orders.')
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)
+
+
+class OrderUpdate(LoginRequiredMixin, UpdateView):
+    model = Order
+    template_name = 'order-update.html'
+    success_url = reverse_lazy('library:user-books')
+    fields = ['pick_up_site',]
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            messages.warning(
+                request, f'You must be logged in to update orders')
+            return self.handle_no_permission()
+        return super().dispatch(request, *args, **kwargs)

@@ -8,7 +8,11 @@ from library.models import Book, Author, Genre
 def run():
     with open('books.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
+        # add 100 records
+        x = 0
         for row in reader:
+            if x > 100:
+                break
             try:
                 authors = row['author'].split(',')
                 authors_objects = []
@@ -36,3 +40,5 @@ def run():
                 b.save()
             except error as e:
                 print(e)
+
+            x += 1
