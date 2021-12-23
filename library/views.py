@@ -123,5 +123,7 @@ class UserBooks(LoginRequiredMixin, ListView):
         context['on_loan'] = on_loan
 
         return context
-    
 
+
+class UserUpdateOrder(LoginRequiredMixin, ListView):
+    pass
