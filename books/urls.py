@@ -31,5 +31,8 @@ urlpatterns = [
     path('', include('library.urls', namespace='library')),
     path('register/', user_views.register, name='register'),
     path('login/', Login.as_view(), name='login'),
+    path('account/', user_views.user_account, name='user-account'),
     path('logout', auth_views.LogoutView.as_view(template_name='logout.html'), name='logout'),
+    path('account/password-change/', user_views.PasswordChange.as_view(), name='password-change'),
+
 ]

@@ -1,10 +1,12 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import request
 from django.shortcuts import redirect, render
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import RegisterForm
 from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 
 # Create your views here.
 
@@ -35,4 +37,17 @@ class Login(auth_views.LoginView):
         messages.success(self.request, f"Logged in")
         return super().form_valid(form)
 
+class PasswordChange(LoginRequiredMixin, auth_views.PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy('user-account')
 
+
+
+def user_account(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, f'You must be logged in to view your profile.')
+        return redirect('login')
+    context = dict()
+    user = User.objects.get(username=request.user.username)
+    context['user'] = user
+    return render(request, 'user-account.html', context)
