@@ -39,7 +39,12 @@ class Login(auth_views.LoginView):
 
 class PasswordChange(LoginRequiredMixin, auth_views.PasswordChangeView):
     form_class = PasswordChangeForm
+    template_name = 'password-change.html'
     success_url = reverse_lazy('user-account')
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Password changed")
+        return super().form_valid(form)
 
 
 
