@@ -1,4 +1,5 @@
 from django.contrib.messages.api import success
+from django.http import request
 from django.shortcuts import redirect, render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
@@ -125,11 +126,13 @@ class OrderDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('library:user-books')
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
+        object = super().get_object(queryset=None)
+        if object.user == request.user or has_group(request.user, 'moderators'):
+            return super().dispatch(request, *args, **kwargs)
+        else:
             messages.warning(
-                request, f'You must be logged in to delete orders.')
-            return self.handle_no_permission()
-        return super().dispatch(request, *args, **kwargs)
+                request, f'You are not allowed to delete this order.')
+            return redirect('library:book-list')
 
 
 class OrderUpdate(LoginRequiredMixin, UpdateView):
@@ -139,8 +142,10 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
     fields = ['pick_up_site',]
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
+        object = super().get_object(queryset=None)
+        if object.user == request.user or has_group(request.user, 'moderators'):
+            return super().dispatch(request, *args, **kwargs)
+        else:
             messages.warning(
-                request, f'You must be logged in to update orders')
-            return self.handle_no_permission()
-        return super().dispatch(request, *args, **kwargs)
+                request, f'You are not allowed to modify this order.')
+            return redirect('library:book-list')
