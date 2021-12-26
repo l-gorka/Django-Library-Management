@@ -1,4 +1,5 @@
 import csv
+import random
 from os import error
 import sys
 from library.models import Book, Author, Genre
@@ -7,7 +8,11 @@ from library.models import Book, Author, Genre
 def run():
     with open('books.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
+        # add 100 records
+        x = 0
         for row in reader:
+            if x > 100:
+                break
             try:
                 authors = row['author'].split(',')
                 authors_objects = []
@@ -20,12 +25,12 @@ def run():
                 for genre in genres:
                     b, created = Genre.objects.get_or_create(genre_name=genre)
                     genres_objects.append(b)
-
                 b, created = Book.objects.get_or_create(title=row['title'],
                                                         description=row['desc'],
                                                         image=row['img'],
                                                         pages=row['pages'],
                                                         format=row['bookformat'],
+                                                        isbn=row['isbn'],
                                                         )
                 print(b.id, b.title)
                 for author in authors_objects:
@@ -35,3 +40,5 @@ def run():
                 b.save()
             except error as e:
                 print(e)
+
+            x += 1

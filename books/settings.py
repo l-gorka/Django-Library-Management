@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'library',
     'users',
     'crispy_forms',
+    'django.contrib.humanize'
 ]
 
 MIDDLEWARE = [
@@ -133,3 +134,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'library:book-list'
+
+LOGIN_URL = 'login'

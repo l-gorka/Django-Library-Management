@@ -1,27 +1,12 @@
 from django.contrib import admin
-from .models import Book, Author, Genre
+from .models import Book, Author, BookItem, Genre, PickUpSite, Order
 # Register your models here.
 
 
-class BookAdmin(admin.ModelAdmin):
-    fields = ['title',
-              'authors',
-              'genre',
-              'description',
-              'image',
-              'pages',
-              'format',
-              ]
 
-
-class AuthorAdmin(admin.ModelAdmin):
-    fields = ['name']
-
-
-class GenreAdmin(admin.ModelAdmin):
-    fields = ['genre_name']
-
-
-admin.site.register(Book, BookAdmin)
-admin.site.register(Author, AuthorAdmin)
-admin.site.register(Genre, GenreAdmin)
+admin.site.register(Book)
+admin.site.register(PickUpSite)
+admin.site.register(Genre)
+admin.site.register(Author)
+admin.site.register(BookItem)
+admin.site.register(Order)
