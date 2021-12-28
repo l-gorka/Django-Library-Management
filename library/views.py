@@ -190,3 +190,7 @@ class StaffOrderUpdate(StaffRequiredMixIn, UpdateView):
         if form.is_valid():
             messages.success(self.request, 'Order updated.')
             return super().form_valid(form)
+
+class ManageBooks(StaffRequiredMixIn, ListView):
+    template_name = 'manage-books.html'
+    model = Book
