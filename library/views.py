@@ -166,7 +166,6 @@ class ManageOrders(StaffRequiredMixIn, ListView):
         context['choices'] = StatusChoices
         context['search'] = self.request.GET.get('search')
         context['status'] = self.request.GET.get('status')
-        
         return context
 
     def get_queryset(self):
@@ -178,5 +177,16 @@ class ManageOrders(StaffRequiredMixIn, ListView):
         if status_choice:
             query.add(Q(status=status_choice), Q.AND)
         qs = Order.objects.filter(query)
-
         return qs
+
+
+class StaffOrderUpdate(StaffRequiredMixIn, UpdateView):
+    template_name = 'order-update.html'
+    model = Order
+    success_url = reverse_lazy('library:manage-orders')
+    fields = ['status']
+
+    def form_valid(self, form):
+        if form.is_valid():
+            messages.success(self.request, 'Order updated.')
+            return super().form_valid(form)
