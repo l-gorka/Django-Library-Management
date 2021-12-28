@@ -34,7 +34,7 @@
           <div class="m-1">
             <input type="search" placeholder="{{ search }}" class="form-control rounded-3" name="search"
               aria-describedby="search-help" value="{{search}}">
-            <div id="search-help" class="form-text">Enter username</div>
+            <div id="search-help" class="ms-1 form-text">Enter username</div>
           </div>
           <div class="m-1">
             <select name="status" id="choice-select" class="form-select">
@@ -43,7 +43,7 @@
               <option value="{{choice}}" {% if status == choice.value|stringformat:"i" %}selected{% endif %}>{{choice.label}}</option>
               {%endfor%}
             </select>
-            <div id="search-help" class="form-text">Select status</div>
+            <div id="status-help" class="ms-1 form-text">Select status</div>
           </div>
           <div class="m-1">
             <button type="submit" value="Search" class=" btn btn-primary">Show orders</button>

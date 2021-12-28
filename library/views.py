@@ -139,7 +139,7 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
     model = Order
     template_name = 'order-update.html'
     success_url = reverse_lazy('library:user-books')
-    fields = ['pick_up_site',]
+    fields = ['pick_up_site', ]
 
     def dispatch(self, request, *args, **kwargs):
         object = super().get_object(queryset=None)
@@ -156,16 +156,27 @@ class StaffRequiredMixIn(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_staff
 
+
 class ManageOrders(StaffRequiredMixIn, ListView):
     template_name = 'manage-orders.html'
     paginate_by = 20
-    model = Order
 
     def get_context_data(self):
-        
         context = super().get_context_data()
         context['choices'] = StatusChoices
         context['search'] = self.request.GET.get('search')
         context['status'] = self.request.GET.get('status')
+        
         return context
-    
+
+    def get_queryset(self):
+        search = self.request.GET.get('search')
+        status_choice = self.request.GET.get('status')
+        query = Q()
+        if search:
+            query = Q(user__username__contains=search)
+        if status_choice:
+            query.add(Q(status=status_choice), Q.AND)
+        qs = Order.objects.filter(query)
+
+        return qs
