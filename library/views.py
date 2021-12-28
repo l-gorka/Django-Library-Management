@@ -4,9 +4,9 @@ from django.shortcuts import redirect, render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
 from django.views.generic.edit import DeleteView, UpdateView
-from library.models import Book, BookItem, Order, PickUpSite
+from library.models import Book, BookItem, Order, PickUpSite, StatusChoices
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from datetime import datetime, timedelta
 from .functions import has_group
@@ -149,3 +149,23 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
             messages.warning(
                 request, f'You are not allowed to modify this order.')
             return redirect('library:book-list')
+
+
+class StaffRequiredMixIn(LoginRequiredMixin, UserPassesTestMixin):
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+class ManageOrders(StaffRequiredMixIn, ListView):
+    template_name = 'manage-orders.html'
+    paginate_by = 20
+    model = Order
+
+    def get_context_data(self):
+        
+        context = super().get_context_data()
+        context['choices'] = StatusChoices
+        context['search'] = self.request.GET.get('search')
+        context['status'] = self.request.GET.get('status')
+        return context
+    
