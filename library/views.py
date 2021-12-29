@@ -4,12 +4,13 @@ from django.shortcuts import redirect, render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
 from django.views.generic.edit import DeleteView, UpdateView
-from library.models import Book, BookItem, Order, PickUpSite, StatusChoices, BookForm
+from library.models import Author, Book, BookItem, Order, PickUpSite, StatusChoices
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from datetime import datetime, timedelta
 from .functions import has_group
+from .forms import BookForm
 from django.urls import reverse_lazy
 
 
@@ -208,5 +209,14 @@ class DeleteBook(StaffRequiredMixIn, SuccessMessageMixin, DeleteView):
 class UpdateBook(StaffRequiredMixIn, SuccessMessageMixin, UpdateView):
     model = Book
     template_name = 'book-update.html'
+    form_class = BookForm
     success_url = reverse_lazy('library:manage-books')
-    #fields = ['title', 'authors', 'isbn', 'format',]
+    success_message = 'Book updated'
+
+
+class CreateBook(StaffRequiredMixIn, SuccessMessageMixin, CreateView):
+    model = Book
+    template_name = 'book-update.html'
+    form_class = BookForm
+    success_url = reverse_lazy('library:manage-books')
+    success_message = 'Book created'

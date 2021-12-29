@@ -6,8 +6,45 @@ from django.forms import ModelForm, widgets
 # Create your models here.
 
 
+class AuthorManager(models.Manager):
+
+    def create_or_new(self, name):
+        name = name.strip()
+        qs = self.get_queryset().filter(name__iexact=name)
+        if qs.exists():
+            return qs.first(), False
+        return Author.objects.create(name=name), True
+
+    def comma_to_qs(self, authors_str):
+        final_ids = []
+        for author in authors_str.split(','):
+            obj, created = self.create_or_new(author)
+            final_ids.append(obj.id)
+        qs = self.get_queryset().filter(id__in=final_ids).distinct()
+        return qs
+
+class GenreManager(models.Manager):
+
+    def create_or_new(self, genre_name):
+        genre_name = genre_name.strip()
+        qs = self.get_queryset().filter(genre_name__iexact=genre_name)
+        if qs.exists():
+            return qs.first(), False
+        return Genre.objects.create(genre_name=genre_name), True
+
+    def comma_to_qs(self, genres_str):
+        final_ids = []
+        for genre in genres_str.split(','):
+            obj, created = self.create_or_new(genre)
+            final_ids.append(obj.id)
+        qs = self.get_queryset().filter(id__in=final_ids).distinct()
+        return qs
+
+
 class Author(models.Model):
     name = models.CharField(max_length=200)
+
+    objects = AuthorManager()
 
     def __str__(self) -> str:
         return self.name
@@ -15,6 +52,8 @@ class Author(models.Model):
 
 class Genre(models.Model):
     genre_name = models.CharField(max_length=50)
+
+    objects = GenreManager()
 
     def __str__(self) -> str:
         return self.genre_name
@@ -26,12 +65,13 @@ class Book(models.Model):
     authors = models.ManyToManyField(Author)
     genre = models.ManyToManyField(Genre, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    image = models.CharField(max_length=200)
+    image = models.CharField(max_length=200, default='https://isocarp.org/app/uploads/2014/05/noimage.jpg')
     pages = models.IntegerField(null=True, blank=True)
     format = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.title
+
 
 """
 class BookForm(ModelForm):
@@ -40,6 +80,7 @@ class BookForm(ModelForm):
         exclude = ['pages']
         widgets = {'title': widgets.Textarea, 'authors': widgets.Textarea}
 """
+
 
 class BookItem(models.Model):
     book_item = models.ForeignKey('Book', on_delete=models.CASCADE)
