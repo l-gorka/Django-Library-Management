@@ -29,21 +29,22 @@
   <section id="search"">
     <div class=" grid">
     <div class="row">
-      <div class="input-group flex-nowrap mt-4 mb-2 mx-5">
+      <div class=" col-12 input-group ps-5 my-2">
         <form action="" class="d-flex " method="get">
           <div class="m-1">
             <input type="search" placeholder="search" class="form-control rounded-3" name="search"
               aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
-            <div id="search-help" class="ms-1 form-text">Search by title, author or genre</div>
+            <div id="search-help" class="ms-1 form-text">
+              <span>Search by title, author or genre</span>
+            </div>
           </div>
           <div class="m-1">
             <button type="submit" value="Search" class=" btn btn-primary">Show orders</button>
           </div>
-
-
         </form>
       </div>
     </div>
+
   </section>
   <section id="books">
     <div class="grid">
@@ -54,13 +55,13 @@
             {% for book in book_list %}
             <div class="card rounded-3 m-2">
               <div class="grid">
-                <div class="row align-items-center">
-                  <div class="col-9">
-                    <p class="">{{book.title}}</p>
+                <div class="row align-items-center d-flex m-0">
+                  <div class="col-10">
+                    <span class="">{{book.title}}</span>
                   </div>
-                  <div class="col-3 d-flex">
-                    <a class=" btn btn-sm btn-success" href="#">Edit</a>
-                    <a class=" btn btn-sm btn-success" href="#">Update</a>
+                  <div class="col-2 d-flex justify-content-end">
+                    <a class=" btn btn-sm btn-success me-1" href="{% url 'library:book-update' book.id %}">Update</a>
+                    <a class=" btn btn-sm btn-danger" href="{% url 'library:book-delete' book.id %}">Delete</a>
                   </div>
                 </div>
               </div>

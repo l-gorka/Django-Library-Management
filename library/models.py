@@ -1,15 +1,30 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.deletion import SET_NULL
+from django.forms import ModelForm, widgets
 
 # Create your models here.
+
+
+class Author(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Genre(models.Model):
+    genre_name = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return self.genre_name
 
 
 class Book(models.Model):
     isbn = models.CharField(max_length=50)
     title = models.CharField(max_length=200)
-    authors = models.ManyToManyField('Author')
-    genre = models.ManyToManyField('Genre', null=True, blank=True)
+    authors = models.ManyToManyField(Author)
+    genre = models.ManyToManyField(Genre, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     image = models.CharField(max_length=200)
     pages = models.IntegerField(null=True, blank=True)
@@ -18,6 +33,13 @@ class Book(models.Model):
     def __str__(self) -> str:
         return self.title
 
+"""
+class BookForm(ModelForm):
+    class Meta:
+        model = Book
+        exclude = ['pages']
+        widgets = {'title': widgets.Textarea, 'authors': widgets.Textarea}
+"""
 
 class BookItem(models.Model):
     book_item = models.ForeignKey('Book', on_delete=models.CASCADE)
@@ -45,7 +67,8 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey('BookItem', on_delete=models.CASCADE)
     status = models.IntegerField(choices=StatusChoices.choices, max_length=50)
-    pick_up_site = models.ForeignKey('PickUpSite', null=True, on_delete=models.SET_NULL)
+    pick_up_site = models.ForeignKey(
+        'PickUpSite', null=True, on_delete=models.SET_NULL)
     date_created = models.DateField()
     date_expiry = models.DateField(null=True, blank=True)
     date_returned = models.DateField(null=True, blank=True)
@@ -60,20 +83,6 @@ class PickUpSite(models.Model):
 
     def __str__(self) -> str:
         return self.site
-
-
-class Author(models.Model):
-    name = models.CharField(max_length=200)
-
-    def __str__(self) -> str:
-        return self.name
-
-
-class Genre(models.Model):
-    genre_name = models.CharField(max_length=50)
-
-    def __str__(self) -> str:
-        return self.genre_name
 
 
 User._meta.get_field('email')._unique = True
