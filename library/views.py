@@ -199,6 +199,7 @@ class ManageBooks(StaffRequiredMixIn, ListView):
     paginate_by = 20
 
 
+
 class DeleteBook(StaffRequiredMixIn, SuccessMessageMixin, DeleteView):
     model = Book
     template_name = 'book-delete.html'

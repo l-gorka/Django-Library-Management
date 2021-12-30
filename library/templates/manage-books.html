@@ -29,7 +29,7 @@
   <section id="search"">
     <div class=" grid">
     <div class="row">
-      <div class=" col-12 input-group ps-5 my-2">
+      <div class=" col-12 input-group px-5 my-2">
         <form action="" class="d-flex " method="get">
           <div class="m-1">
             <input type="search" placeholder="search" class="form-control rounded-3" name="search"
@@ -41,10 +41,10 @@
           <div class="m-1">
             <button type="submit" value="Search" class=" btn btn-primary">Show orders</button>
           </div>
-          <div class="m-1">
-            <a href="{% url 'library:add-book' %}" class="btn btn-success"></a>
-          </div>
         </form>
+        <div class="m-1">
+          <a href="{% url 'library:add-book' %}" class="btn btn-success">Add a book</a>
+        </div>
       </div>
     </div>
 
@@ -56,15 +56,15 @@
           <ul class=" list-group border-0">
             {% if book_list %}
             {% for book in book_list %}
-            <div class="card rounded-3 m-2">
+            <div class="card rounded-3 {%cycle 'bg-light' 'bg-white' %} m-1">
               <div class="grid">
-                <div class="row align-items-center d-flex m-0">
+                <div class="row align-items-center d-flex m-1">
                   <div class="col-10">
-                    <span class="">{{book.title}}</span>
+                    <a href="{% url 'library:book-detail' book.id %}" class="">{{ book.title}}</a>
                   </div>
                   <div class="col-2 d-flex justify-content-end">
-                    <a class=" btn btn-sm btn-success me-1" href="{% url 'library:book-update' book.id %}">Update</a>
-                    <a class=" btn btn-sm btn-danger" href="{% url 'library:book-delete' book.id %}">Delete</a>
+                    <a class=" btn btn-sm btn-outline-success me-1" href="{% url 'library:book-update' book.id %}">Update</a>
+                    <a class=" btn btn-sm btn-outline-danger" href="{% url 'library:book-delete' book.id %}">Delete</a>
                   </div>
                 </div>
               </div>
