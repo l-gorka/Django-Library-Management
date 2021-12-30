@@ -142,8 +142,6 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('library:user-books')
     fields = ['pick_up_site', ]
 
-
-
     def dispatch(self, request, *args, **kwargs):
         object = super().get_object(queryset=None)
         if object.user == request.user or has_group(request.user, 'moderators'):
@@ -191,7 +189,12 @@ class StaffOrderUpdate(StaffRequiredMixIn, UpdateView):
 
     def form_valid(self, form):
         if form.is_valid():
-            messages.success(self.request, 'Order updated.')
+            if form.cleaned_data['status'] == 3:
+                obj = form.save(commit=False)
+                obj.date_returned = datetime.now()
+                obj.save()
+                messages.success(self.request, 'Order updated.')
+                return redirect('library:manage-orders')
             return super().form_valid(form)
 
 

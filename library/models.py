@@ -1,9 +1,9 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.deletion import SET_NULL
-from django.forms import ModelForm, widgets
-
-# Create your models here.
+from django.db.models.signals import post_save
+from datetime import datetime
 
 
 class AuthorManager(models.Manager):
@@ -22,6 +22,7 @@ class AuthorManager(models.Manager):
             final_ids.append(obj.id)
         qs = self.get_queryset().filter(id__in=final_ids).distinct()
         return qs
+
 
 class GenreManager(models.Manager):
 
@@ -65,21 +66,13 @@ class Book(models.Model):
     authors = models.ManyToManyField(Author)
     genre = models.ManyToManyField(Genre, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    image = models.CharField(max_length=200, default='https://isocarp.org/app/uploads/2014/05/noimage.jpg')
+    image = models.CharField(
+        max_length=200, default='https://isocarp.org/app/uploads/2014/05/noimage.jpg')
     pages = models.IntegerField(null=True, blank=True)
     format = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.title
-
-
-"""
-class BookForm(ModelForm):
-    class Meta:
-        model = Book
-        exclude = ['pages']
-        widgets = {'title': widgets.Textarea, 'authors': widgets.Textarea}
-"""
 
 
 class BookItem(models.Model):
@@ -127,3 +120,16 @@ class PickUpSite(models.Model):
 
 
 User._meta.get_field('email')._unique = True
+
+
+def order_save(sender, instance, **kwargs):
+    book_item = BookItem.objects.get(id=instance.item.id)
+    if instance.status == 3:
+        book_item.issued_to = None
+        book_item.issue_date = None
+        book_item.expiry_date = None
+        book_item.save()
+
+
+
+post_save.connect(order_save, sender=Order)
