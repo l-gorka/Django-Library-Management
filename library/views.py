@@ -38,14 +38,14 @@ class BookListView(LoginRequiredMixin, ListView):
             book_list = Book.objects.all()
             search = ''
         query_length = len(book_list)
-        paginator = Paginator(book_list, 100)
+        paginator = Paginator(book_list, 20)
         try:
             books = paginator.page(page)
         except PageNotAnInteger:
             books = paginator.page(1)
         except EmptyPage:
             books = paginator.page(paginator.num_pages)
-        context = {'book_list': books, 'search': search,
+        context = {'page_obj': books, 'search': search,
                    'query_length': query_length}
         return render(request, self.template_name, context)
 
@@ -142,6 +142,8 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('library:user-books')
     fields = ['pick_up_site', ]
 
+
+
     def dispatch(self, request, *args, **kwargs):
         object = super().get_object(queryset=None)
         if object.user == request.user or has_group(request.user, 'moderators'):
@@ -199,7 +201,6 @@ class ManageBooks(StaffRequiredMixIn, ListView):
     paginate_by = 20
 
 
-
 class DeleteBook(StaffRequiredMixIn, SuccessMessageMixin, DeleteView):
     model = Book
     template_name = 'book-delete.html'
@@ -221,3 +222,35 @@ class CreateBook(StaffRequiredMixIn, SuccessMessageMixin, CreateView):
     form_class = BookForm
     success_url = reverse_lazy('library:manage-books')
     success_message = 'Book created'
+
+
+class CreateBookItem(StaffRequiredMixIn, CreateView):
+    model = BookItem
+    template_name = 'add-book-item.html'
+    fields = []
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('library:book-detail', kwargs={'pk': self.kwargs['pk']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["book"] = Book.objects.get(id=self.kwargs['pk'])
+        return context
+    
+    def form_valid(self, form):
+        book_obj = Book.objects.get(id=self.kwargs['pk'])
+        self.obj = form.save(commit=False)
+        self.obj.book_item = book_obj
+        self.obj.save()
+        messages.success(self.request, f'Added copy of the book')
+        return redirect(self.get_success_url())
+
+
+class DeleteBookItem(StaffRequiredMixIn, SuccessMessageMixin, DeleteView):
+    model = BookItem
+    template_name = 'book-item-delete.html'
+    success_message = 'Book item deleted'
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('library:book-detail', kwargs={'pk': self.kwargs['book']})
+

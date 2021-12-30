@@ -85,11 +85,11 @@ class BookForm(ModelForm):
 class BookItem(models.Model):
     book_item = models.ForeignKey('Book', on_delete=models.CASCADE)
     issued_to = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    issue_date = models.DateField(null=True)
-    expiry_date = models.DateField(null=True)
+    issue_date = models.DateField(null=True, blank=True)
+    expiry_date = models.DateField(null=True, blank=True)
 
     class Meta():
-        verbose_name_plural = 'Book copies'
+        verbose_name_plural = 'Book items'
 
     def __str__(self) -> str:
         id = str(self.pk)

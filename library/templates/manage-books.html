@@ -83,16 +83,16 @@
     <div class=" justify-content-center my-2">
       <ul class="pagination d-flex justify-content-center">
         {% if page_obj.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page=1&search={{search}}&status={{status}}">first</a></li>
+        <li class="page-item"><a class="page-link" href="?page=1&search={{search}}">&laquo first</a></li>
         <li class="page-item"><a class="page-link"
-            href="?page={{ page_obj.previous_page_number }}&search={{search}}&status={{status}}">previous</a></li>
+            href="?page={{ page_obj.previous_page_number }}&search={{search}}">previous</a></li>
         {% endif %}
         <li class="page-item page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</li>
         {% if page_obj.has_next %}
         <li class="page-item"><a class="page-link"
-            href="?page={{ page_obj.next_page_number }}&search={{search}}&status={{status}}">next</a></li>
+            href="?page={{ page_obj.next_page_number }}&search={{search}}">next</a></li>
         <li class="page-item"><a class="page-link"
-            href="?page={{ page_obj.paginator.num_pages }}&search={{search}}&status={{status}}">last&raquo;</a></li>
+            href="?page={{ page_obj.paginator.num_pages }}&search={{search}}">last &raquo;</a></li>
         {% endif %}
       </ul>
     </div>

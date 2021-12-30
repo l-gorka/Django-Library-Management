@@ -41,6 +41,9 @@
                         {% for item in items  %}
                             <li class="list-group-item d-sm-flex justify-content-between">
                                 <span>Book ID: {{ item.pk }}</span>
+                                {% if user.is_staff %}
+                                <a href="{% url 'library:delete-book-item' book.id item.id %}" class="btn btn-sm btn-outline-danger">Delete item</a>
+                                {% else %}
                                 {% if item.issued_to == None %}
                     
                                 <form action="{%url 'library:order-create' item.pk %}" class=" form-control-sm m-0 p-0" method="POST">
@@ -59,9 +62,15 @@
                                 {% else %}
                                 <span>Book should be aviable at {{ item.expiry_date}}</span>
                                 {% endif %}
+                                {% endif %}
                             </li>
                         {% endfor %}
                       </ul>
+                      {% if user.is_staff %}
+                      <div class="mt-2">                          
+                          <a href="{% url 'library:add-book-item' book.id %}" class="">Add book copy</a>
+                      </div>
+                      {% endif %}
 
                 </div>
                 

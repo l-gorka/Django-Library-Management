@@ -1,5 +1,5 @@
 from django import forms
-from .models import Author, Book, Genre
+from .models import Author, Book, BookItem, Genre
 
 class BookForm(forms.ModelForm):
     authors_str = forms.CharField(label='Authors', widget=forms.Textarea, required=True)
