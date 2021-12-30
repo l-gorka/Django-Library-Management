@@ -136,3 +136,9 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'library:book-list'
 
 LOGIN_URL = 'login'
+
+# Email 
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '7d296c3d412a5b'
+EMAIL_HOST_PASSWORD = '23ddf980c0fac8'
+EMAIL_PORT = '2525'

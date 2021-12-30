@@ -7,6 +7,7 @@ from django.contrib import messages
 from .forms import RegisterForm
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
+from django.core.mail import send_mail
 
 # Create your views here.
 
@@ -16,13 +17,19 @@ def register(request):
         return redirect('library:book-list')
     else:
         if request.method == 'POST':
-            print('v')
             form = RegisterForm(request.POST)
             if form.is_valid():
-                print('v')
                 form.save()
+                email = request.POST.get('email')
                 username = form.cleaned_data.get('username')
                 messages.success(request, f'Added new account for {username}.')
+                send_mail(
+                    'Library Management',
+                    'Account has been created',
+                    'lms@example.com',
+                    [email],
+                    fail_silently=False,
+                )
                 return redirect('library:book-list')
         else:
             print('e')
