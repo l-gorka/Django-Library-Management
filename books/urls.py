@@ -26,7 +26,7 @@ from users.views import Login
 import library
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='admin'),
     path('base/', TemplateView.as_view(template_name='base-menu.html'), name='base'),
     path('', include('library.urls', namespace='library')),
     path('register/', user_views.register, name='register'),

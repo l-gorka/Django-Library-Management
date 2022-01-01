@@ -64,7 +64,7 @@ class Book(models.Model):
     isbn = models.CharField(max_length=50)
     title = models.CharField(max_length=200)
     authors = models.ManyToManyField(Author)
-    genre = models.ManyToManyField(Genre, null=True, blank=True)
+    genre = models.ManyToManyField(Genre)
     description = models.TextField(null=True, blank=True)
     image = models.CharField(
         max_length=200, default='https://isocarp.org/app/uploads/2014/05/noimage.jpg')
@@ -100,7 +100,7 @@ class StatusChoices(models.IntegerChoices):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey('BookItem', on_delete=models.CASCADE)
-    status = models.IntegerField(choices=StatusChoices.choices, max_length=50)
+    status = models.IntegerField(choices=StatusChoices.choices)
     pick_up_site = models.ForeignKey(
         'PickUpSite', null=True, on_delete=models.SET_NULL)
     date_created = models.DateField()
