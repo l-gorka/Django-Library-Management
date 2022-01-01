@@ -1,7 +1,7 @@
 from django.http import response
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from datetime import datetime
 
 from library.views import Book
@@ -98,9 +98,7 @@ class UrlsTestUserAuthenticated(UrlsTests):
 
     def setUp(self) -> None:
         user = User.objects.create_user(username='ad', password='test4321')
-        print(User.objects.get(username='ad'))
         login = self.client.login(username='ad', password='test4321')
-        print(login)
 
     def test_book_list_accessible(self):
         response = self.client.get(reverse('library:book-list'))
@@ -114,6 +112,45 @@ class UrlsTestUserAuthenticated(UrlsTests):
         response = self.client.get(reverse('library:book-detail', args=(1,)))
         self.assertEqual(response.status_code, 200)
 
+    def my_books_page_accessible(self):
+        response = self.client.get(reverse('library:user-books'))
+        self.assertEqual(response.status_code, 200)
+
     def test_manage_orders_forbidden(self):
         response = self.client.get(reverse('library:manage-orders'))
         self.assertEqual(response.status_code, 403)
+
+    def test_add_book_page_forbidden(self):
+        response = self.client.get(reverse('library:add-book'))
+        self.assertEqual(response.status_code, 403)
+
+
+class UrlsTestsUserIsStaff(UrlsTests):
+    def setUp(self):
+        moderators = Group.objects.create(
+            name='moderators'
+        )
+        User.objects.create_user(
+            username='test_admin',
+            password='test4321',
+            is_staff=True,
+        )
+        admin = User.objects.get(username='test_admin')
+        moderators.user_set.add(admin)
+        self.client.login(username='test_admin', password='test4321')
+
+
+    def test_manage_orders_page_accessible(self):
+        response = self.client.get(reverse('library:manage-orders'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_order_page_accessible(self):
+        response = self.client.get(reverse('library:order-update', args=(1,)))
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_book_page_accessible(self):
+        response = self.client.get(reverse('library:add-book'))
+        self.assertEqual(response.status_code, 200)
+
+
+    
