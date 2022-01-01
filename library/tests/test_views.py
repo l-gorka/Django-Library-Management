@@ -2,57 +2,75 @@ from django.http import response
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User, Group
-from datetime import datetime
+from datetime import date, datetime
 
-from library.models import Author, BookItem, Genre, Book, Order
-
-
-class ViewsTests(TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        user, created = User.objects.get_or_create(
-            username='test_user',
-            email='mail@at.at',
-            password='test4321'
-        )
-
-        group = Group.objects.get_or_create(name='moderators')
-    
-        author = Author.objects.create(
-            name='test_author'
-        )
-        genre = Genre.objects.create(
-            genre_name='test_genre'
-        )
-        for item in range(22):
-            book = Book.objects.create(
-                isbn='21e321e',
-                title='test_title',
-            )
-        book_item = BookItem.objects.create(
-            book_item=book
-        )
-        order = Order.objects.create(
-            user=user,
-            item=book_item,
-            status=0,
-            date_created=datetime.now(),
-        )
-
-        super().setUpClass()
+from library.models import Author, BookItem, Genre, Book, Order, PickUpSite
+from .base_tests import BaseTestData
 
 
-class BookListViewTest(ViewsTests):
+class BookListViewTest(BaseTestData):
     def setUp(self):
-        admin = User.objects.create_user(username='admin', password='test4321', is_staff=True)     
-        login = self.client.login(username='admin', password='test4321')
+        login = self.client.login(username='user', password='test4321')
 
-    def test_page_accessible(self):
+    def test_queryset_is_22(self):
         response = self.client.get(reverse('library:book-list'))
+        self.assertEqual(response.context.get('query_length'), 22)
+
+
+class BookDetailViewTest(BaseTestData):
+    def setUp(self):
+        login = self.client.login(username='user', password='test4321')
+
+    def test_pick_up_sites_and_book_copies_accessible(self):
+        response = self.client.get(reverse('library:book-detail', args=(1,)))
+        self.assertEqual(len(response.context.get('sites')), 1)
+        self.assertEqual(len(response.context.get('items')), 1)
+
+
+class UserBooksViewTest(BaseTestData):
+        
+    def test_user_orders_statuses_visible(self):
+        login = self.client.login(username='user', password='test4321')
+        user = User.objects.get(username='user')
+        order1 = Order.objects.filter(user=user)[1]        
+        order1.status = 1
+        order1.save()
+        order2 = Order.objects.filter(user=user)[2]
+        order2.status = 2
+        order2.save()
+
+        response = self.client.get(reverse('library:user-books'))
+        self.assertEqual(len(response.context.get('reserved')), 20)
+        self.assertEqual(len(response.context.get('waiting')), 1)
+        self.assertEqual(len(response.context.get('on_loan')), 1)
+
+
+class ManageOrdersViewTest(BaseTestData):
+    def setUp(self):
+        login = self.client.login(username='user', password='test4321')
+
+    def test_is_accessible_for_authenticated_user(self):
+        response = self.client.get(reverse('library:manage-orders'))
         self.assertEqual(response.status_code, 200)
 
-    def test_pagination_is_10(self):
-        books = Book.objects.all()
-        print(len(books))
-        response = self.client.get(reverse('library:book-list'))
-        self.assertFalse('is_paginated' in response.context)
+    def test_is_paginated_by_20(self):
+        response = self.client.get(reverse('library:manage-orders'))
+        self.assertTrue('is_paginated' in response.context)
+        self.assertEqual(len(response.context.get('order_list')), 20)
+
+    def test_view_with_search_parameter(self):
+        book = Book.objects.create(isbn='2edawq32', title='test_title2')
+        book_item = BookItem.objects.create(book_item=book)
+        user = User.objects.get(username='user2')
+
+        Order.objects.create(user=user, item=book_item,
+                             status=0, date_created=datetime.now())
+        response = self.client.get(
+            reverse('library:manage-orders') + '?search=user2')
+        self.assertEqual(len(response.context.get('order_list')), 20)
+
+    def test_status_search_page_parameters(self):
+        response = self.client.get(
+            reverse('library:manage-orders') + '?search=user2&status=1&page=2'
+        )
+        self.assertEqual(len(response.context.get('order_list')), 2)
