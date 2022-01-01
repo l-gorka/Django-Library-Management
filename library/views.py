@@ -33,9 +33,9 @@ class BookListView(LoginRequiredMixin, ListView):
             query = Q(title__icontains=search)
             query.add(Q(authors__name__icontains=search), Q.OR)
             query.add(Q(genre__genre_name__icontains=search), Q.OR)
-            book_list = Book.objects.filter(query).select_related().distinct().order_by('title')
+            book_list = Book.objects.filter(query).select_related().distinct()
         else:
-            book_list = Book.objects.all().order_by('title')
+            book_list = Book.objects.all()
             search = ''
         query_length = len(book_list)
         paginator = Paginator(book_list, 20)
@@ -177,7 +177,7 @@ class ManageOrders(StaffRequiredMixIn, ListView):
             query = Q(user__username__contains=search)
         if status_choice:
             query.add(Q(status=status_choice), Q.AND)
-        qs = Order.objects.filter(query).order_by('date_created')
+        qs = Order.objects.filter(query)
         return qs
 
 
