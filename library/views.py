@@ -5,7 +5,6 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
 from django.views.generic.edit import DeleteView, UpdateView
 from library.models import Author, Book, BookItem, Order, PickUpSite, StatusChoices
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from datetime import datetime, timedelta
@@ -19,8 +18,7 @@ class BookListView(ListView):
     template_name = 'book-list.html'
     paginate_by = 20
 
-    def get_context_data(self, **kwargs):
-        context = dict()
+    def get_queryset(self):
         search = self.request.GET.get('search')
         if search:
             query = Q(title__icontains=search)
@@ -30,13 +28,20 @@ class BookListView(ListView):
                 query).select_related().distinct().order_by('title')
         else:
             book_list = Book.objects.all().distinct().order_by('title')
-            search = ''
-        context['book_list'] = book_list
-        context['search'] = search
+        return book_list
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search = self.request.GET.get('search')
+        if search:
+            context['search'] = search
+        else:
+            context['search'] = ''
+        context['query_length'] = self.get_queryset().count()
         return context
 
 
-class BookDetailView(LoginRequiredMixin, DetailView):
+class BookDetailView(DetailView):
     model = Book
     template_name = 'detail.html'
 
@@ -48,13 +53,6 @@ class BookDetailView(LoginRequiredMixin, DetailView):
         context['sites'] = s
         return context
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            messages.warning(
-                request, f'You must be logged in to access the book detail.')
-            return self.handle_no_permission()
-        return super().dispatch(request, *args, **kwargs)
-
 
 def order_create(request, **kwargs):
     if not request.user.is_authenticated:
@@ -64,12 +62,7 @@ def order_create(request, **kwargs):
         if request.method == 'POST':
             book_item = BookItem.objects.get(pk=request.POST.get('pk'))
             if book_item.issued_to == None:
-                book_item = BookItem.objects.get(pk=request.POST.get('pk'))
                 book_item.issued_to = request.user
-                book_item.issue_date = datetime.date(datetime.now())
-                book_item.expiry_date = book_item.issue_date + \
-                    timedelta(days=10)
-
                 p_site = PickUpSite.objects.get(id=request.POST.get('site'))
                 order = Order.objects.create(
                     user=request.user,
@@ -80,7 +73,7 @@ def order_create(request, **kwargs):
                 )
                 book_item.save()
                 messages.success(
-                    request, f'Your request will be processed soon. Check mailbox')
+                    request, f'Book requested')
                 return redirect('library:book-list')
             else:
                 messages.warning(
@@ -175,6 +168,14 @@ class StaffOrderUpdate(StaffRequiredMixIn, UpdateView):
 
     def form_valid(self, form):
         if form.is_valid():
+            if form.cleaned_data['status'] == 2:
+                obj = form.save(commit=False)
+                obj.date_picked = datetime.now()
+                obj.date_expiry = datetime.now() + timedelta(days=10)
+                print(obj.date_picked, obj.date_expiry)
+                obj.save()
+                messages.success(self.request, 'Order updated.')
+                return redirect('library:manage-orders')
             if form.cleaned_data['status'] == 3:
                 obj = form.save(commit=False)
                 obj.date_returned = datetime.now()

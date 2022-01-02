@@ -104,6 +104,7 @@ class Order(models.Model):
     pick_up_site = models.ForeignKey(
         'PickUpSite', null=True, on_delete=models.SET_NULL)
     date_created = models.DateField()
+    date_picked = models.DateField(null=True, blank=True)
     date_expiry = models.DateField(null=True, blank=True)
     date_returned = models.DateField(null=True, blank=True)
 

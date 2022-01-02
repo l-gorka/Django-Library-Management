@@ -11,7 +11,9 @@ class BookListViewTest(PaginationTestData):
         login = self.client.login(username='user', password='test4321')
     def test_queryset_is_22(self):
         response = self.client.get(reverse('library:book-list'))
-        self.assertEqual(len(response.context.get('book_list')), 22)
+        self.assertEqual(len(response.context.get('book_list')), 20)
+        response = self.client.get(reverse('library:book-list')+'?page=2')
+        self.assertEqual(len(response.context.get('book_list')), 2)
         
 
 class BookDetailViewTest(BaseTestData):
@@ -65,6 +67,31 @@ class OrderDeleteViewTest(BaseTestData):
         self.assertEqual(response.url, '/list/')
         deleted = get_or_none(Order, id=id)
         self.assertNotEqual(deleted, None)
+
+class OrderUpdateViewTest(BaseTestData):
+
+    def test_order_is_updated(self):
+        login = self.client.login(username='user', password='test4321')
+        user = User.objects.get(username='user')
+        order = make_order(user)
+        id = order.id
+        site = PickUpSite.objects.all()[0]
+
+        response = self.client.post(reverse('library:order-update', args=(id,)), {'pick_up_site': site.id})
+        self.assertEqual(response.url, '/mybooks/')
+        updated = Order.objects.get(id=id)
+        self.assertEqual(str(updated.pick_up_site), 'main')
+
+    def test_update_order_of_another_user(self):
+        login = self.client.login(username='user', password='test4321')
+        user2 = User.objects.get(username='user2')
+        id = make_order(user2).id
+        site = PickUpSite.objects.all()[0]
+
+        response = self.client.post(reverse('library:order-update', args=(id,)), {'pick_up_site': site.id})
+        self.assertEqual(response.url, '/list/')
+        updated = Order.objects.get(id=id)
+        self.assertEqual(updated.pick_up_site, None)
 
 
 class ManageOrdersViewTest(PaginationTestData):

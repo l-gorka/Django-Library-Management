@@ -18,9 +18,9 @@ class UrlsUnauthenticatedUser(BaseTestData):
         response = self.client.get(reverse('library:user-books'))
         self.assertEqual(response.status_code, 302)
 
-    def test_book_detail_redirect(self):
+    def test_book_detail_accessible(self):
         response = self.client.get(reverse('library:book-detail', args=(1,)))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_order_create_redirect(self):
         response = self.client.get(reverse('library:order-create', args=(1,)))
