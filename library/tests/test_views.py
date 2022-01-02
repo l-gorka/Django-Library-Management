@@ -85,8 +85,7 @@ class ManageOrdersViewTest(PaginationTestData):
         book_item = BookItem.objects.create(book_item=book)
         user = User.objects.get(username='user2')
 
-        Order.objects.create(user=user, item=book_item,
-                             status=0, date_created=datetime.now())
+        make_order(user)
         response = self.client.get(
             reverse('library:manage-orders') + '?search=user2')
         self.assertEqual(len(response.context.get('order_list')), 20)
