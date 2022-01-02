@@ -9,7 +9,7 @@ from django.views.generic.base import View
 from library.models import Author, BookItem, Genre, Book, Order, PickUpSite
 
 def get_current_book_id():
-    return Book.objects.all()[0]
+    return Book.objects.all()[0].id
 
 def make_order(user):
     order = Order.objects.create(

@@ -1,20 +1,22 @@
+from django.http import response
 from django.urls import reverse
 from django.contrib.auth.models import User
 from datetime import datetime
 
 from library.models import Author, BookItem, Genre, Book, Order, PickUpSite
-from .base_tests import BaseTestData, PaginationTestData, make_order, get_or_none
+from .base_tests import BaseTestData, PaginationTestData, get_current_book_id, make_order, get_or_none
 
 
 class BookListViewTest(PaginationTestData):
     def setUp(self):
         login = self.client.login(username='user', password='test4321')
+
     def test_queryset_is_22(self):
         response = self.client.get(reverse('library:book-list'))
         self.assertEqual(len(response.context.get('book_list')), 20)
         response = self.client.get(reverse('library:book-list')+'?page=2')
         self.assertEqual(len(response.context.get('book_list')), 2)
-        
+
 
 class BookDetailViewTest(BaseTestData):
     def setUp(self):
@@ -28,11 +30,11 @@ class BookDetailViewTest(BaseTestData):
 
 
 class UserBooksViewTest(PaginationTestData):
-        
+
     def test_user_orders_statuses_visible(self):
         login = self.client.login(username='user', password='test4321')
         user = User.objects.get(username='user')
-        order1 = Order.objects.filter(user=user)[1]        
+        order1 = Order.objects.filter(user=user)[1]
         order1.status = 1
         order1.save()
         order2 = Order.objects.filter(user=user)[2]
@@ -53,7 +55,8 @@ class OrderDeleteViewTest(BaseTestData):
         order = make_order(user)
         id = order.id
 
-        response = self.client.post(reverse('library:order-delete', args=(id,)))
+        response = self.client.post(
+            reverse('library:order-delete', args=(id,)))
         self.assertEqual(response.status_code, 302)
         deleted = get_or_none(Order, id=id)
         self.assertEqual(deleted, None)
@@ -63,10 +66,12 @@ class OrderDeleteViewTest(BaseTestData):
         user2 = User.objects.get(username='user2')
         id = make_order(user2).id
 
-        response = self.client.post(reverse('library:order-delete', args=(id,)))
+        response = self.client.post(
+            reverse('library:order-delete', args=(id,)))
         self.assertEqual(response.url, '/list/')
         deleted = get_or_none(Order, id=id)
         self.assertNotEqual(deleted, None)
+
 
 class OrderUpdateViewTest(BaseTestData):
 
@@ -77,7 +82,8 @@ class OrderUpdateViewTest(BaseTestData):
         id = order.id
         site = PickUpSite.objects.all()[0]
 
-        response = self.client.post(reverse('library:order-update', args=(id,)), {'pick_up_site': site.id})
+        response = self.client.post(
+            reverse('library:order-update', args=(id,)), {'pick_up_site': site.id})
         self.assertEqual(response.url, '/mybooks/')
         updated = Order.objects.get(id=id)
         self.assertEqual(str(updated.pick_up_site), 'main')
@@ -88,10 +94,12 @@ class OrderUpdateViewTest(BaseTestData):
         id = make_order(user2).id
         site = PickUpSite.objects.all()[0]
 
-        response = self.client.post(reverse('library:order-update', args=(id,)), {'pick_up_site': site.id})
+        response = self.client.post(
+            reverse('library:order-update', args=(id,)), {'pick_up_site': site.id})
         self.assertEqual(response.url, '/list/')
         updated = Order.objects.get(id=id)
         self.assertEqual(updated.pick_up_site, None)
+
 
 class StaffOrderUpdateViewTest(BaseTestData):
 
@@ -100,12 +108,14 @@ class StaffOrderUpdateViewTest(BaseTestData):
         user = User.objects.get(username='user')
         order = make_order(user)
         id = order.id
-        
-        response = self.client.post(reverse('library:staff-update', args=(id,)), {'status': 2})
+
+        response = self.client.post(
+            reverse('library:staff-update', args=(id,)), {'status': 2})
         self.assertEqual(response.url, '/manage/orders/')
         updated = Order.objects.get(id=id)
         self.assertEqual(str(updated.status), '2')
         self.assertNotEqual(updated.date_expiry, None)
+
 
 class ManageBookViewTest(PaginationTestData):
     def setUp(self):
@@ -115,6 +125,18 @@ class ManageBookViewTest(PaginationTestData):
         response = self.client.get(
             reverse('library:manage-books') + '?search=test&page=2')
         self.assertEqual(len(response.context.get('book_list')), 2)
+
+
+class DeleteBookViewTest(BaseTestData):
+
+    def test_book_is_deleted(self):
+        login = self.client.login(username='user2', password='test4321')
+        id = get_current_book_id()
+
+        response = self.client.post(reverse('library:book-delete', args=(id,)))
+        deleted = get_or_none(Book, id=id)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(deleted, None)
 
 
 class ManageOrdersViewTest(PaginationTestData):
