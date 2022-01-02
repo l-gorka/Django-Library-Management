@@ -9,18 +9,18 @@ from .base_tests import BaseTestData, PaginationTestData, make_order, get_or_non
 class BookListViewTest(PaginationTestData):
     def setUp(self):
         login = self.client.login(username='user', password='test4321')
-
     def test_queryset_is_22(self):
         response = self.client.get(reverse('library:book-list'))
-        self.assertEqual(response.context.get('query_length'), 22)
-
+        self.assertEqual(len(response.context.get('book_list')), 22)
+        
 
 class BookDetailViewTest(BaseTestData):
     def setUp(self):
         login = self.client.login(username='user', password='test4321')
 
     def test_pick_up_sites_and_book_copies_accessible(self):
-        response = self.client.get(reverse('library:book-detail', args=(1,)))
+        id = Book.objects.all()[0].id
+        response = self.client.get(reverse('library:book-detail', args=(id,)))
         self.assertEqual(len(response.context.get('sites')), 1)
         self.assertEqual(len(response.context.get('items')), 1)
 

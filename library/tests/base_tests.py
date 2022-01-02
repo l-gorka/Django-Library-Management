@@ -8,6 +8,9 @@ from django.views.generic.base import View
 
 from library.models import Author, BookItem, Genre, Book, Order, PickUpSite
 
+def get_current_book_id():
+    return Book.objects.all()[0]
+
 def make_order(user):
     order = Order.objects.create(
                 user=user,
@@ -49,6 +52,7 @@ class BaseTestData(TestCase):
             book_item=book
         )
         pick_site = PickUpSite.objects.create(site='main', adress='test_adress')
+        order = Order.objects.create(user=user, item=book_item, status=0, date_created=datetime.now())
 
         super().setUpTestData()
 
@@ -76,7 +80,7 @@ class PaginationTestData(TestCase):
         for item in range(22):
             book = Book.objects.create(
                 isbn='21e321e'+str(item),
-                title='test_title',
+                title='test_title'+str(item),
             )
             book_item = BookItem.objects.create(
                 book_item=book

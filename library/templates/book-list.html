@@ -25,8 +25,8 @@
     {% endif %}
     <div class=" d-block d-md-flex">
       <form action="{% url 'library:book-list' %}" class=" " method="get">
-        <input type="search" placeholder="{{ search }}" class=" rounded-3 m-2" name="search">
-        <button type="submit" value="Search" class=" btn btn-primary">Search</button>
+        <input type="search" placeholder="" class=" rounded-3 m-2" name="search" value="{% if search %}{{search}}{% else %}{% endif %}">
+        <button type="submit" class=" btn btn-primary">Search</button>
       </form>
       <p class=" lead m-2"> Type book title, author name or genre</p>
     </div>
@@ -38,7 +38,7 @@
         <div class="row justify-content-center">
           <div class="col-12">
             <ul class=" list-group border-0">
-              {% for book in page_obj %}
+              {% for book in book_list %}
               {% if forloop.counter|divisibleby:2 %}
               <li class=" list-group-item bg-light">
                 <a href="{% url 'library:book-detail' book.id%}" class=" link-dark">{{book.title}} -

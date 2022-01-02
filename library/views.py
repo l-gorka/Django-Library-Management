@@ -14,40 +14,26 @@ from .forms import BookForm
 from django.urls import reverse_lazy
 
 
-class BookListView(LoginRequiredMixin, ListView):
+class BookListView(ListView):
     model = Book
     template_name = 'book-list.html'
+    paginate_by = 20
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            messages.warning(
-                request, f'You must be logged in to access the book list.')
-            return self.handle_no_permission()
-        return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request):
-        page = request.GET.get('page', 1)
-        search = request.GET.get('search', False)
-
+    def get_context_data(self, **kwargs):
+        context = dict()
+        search = self.request.GET.get('search')
         if search:
             query = Q(title__icontains=search)
             query.add(Q(authors__name__icontains=search), Q.OR)
             query.add(Q(genre__genre_name__icontains=search), Q.OR)
-            book_list = Book.objects.filter(query).select_related().distinct().order_by('title')
+            book_list = Book.objects.filter(
+                query).select_related().distinct().order_by('title')
         else:
-            book_list = Book.objects.all().order_by('title')
+            book_list = Book.objects.all().distinct().order_by('title')
             search = ''
-        query_length = len(book_list)
-        paginator = Paginator(book_list, 20)
-        try:
-            books = paginator.page(page)
-        except PageNotAnInteger:
-            books = paginator.page(1)
-        except EmptyPage:
-            books = paginator.page(paginator.num_pages)
-        context = {'page_obj': books, 'search': search,
-                   'query_length': query_length}
-        return render(request, self.template_name, context)
+        context['book_list'] = book_list
+        context['search'] = search
+        return context
 
 
 class BookDetailView(LoginRequiredMixin, DetailView):
@@ -239,7 +225,7 @@ class CreateBookItem(StaffRequiredMixIn, CreateView):
         context = super().get_context_data(**kwargs)
         context["book"] = Book.objects.get(id=self.kwargs['pk'])
         return context
-    
+
     def form_valid(self, form):
         book_obj = Book.objects.get(id=self.kwargs['pk'])
         self.obj = form.save(commit=False)
@@ -256,4 +242,3 @@ class DeleteBookItem(StaffRequiredMixIn, SuccessMessageMixin, DeleteView):
 
     def get_success_url(self) -> str:
         return reverse_lazy('library:book-detail', kwargs={'pk': self.kwargs['book']})
-
