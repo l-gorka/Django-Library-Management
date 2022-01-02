@@ -172,7 +172,6 @@ class StaffOrderUpdate(StaffRequiredMixIn, UpdateView):
                 obj = form.save(commit=False)
                 obj.date_picked = datetime.now()
                 obj.date_expiry = datetime.now() + timedelta(days=10)
-                print(obj.date_picked, obj.date_expiry)
                 obj.save()
                 messages.success(self.request, 'Order updated.')
                 return redirect('library:manage-orders')
@@ -189,6 +188,28 @@ class ManageBooks(StaffRequiredMixIn, ListView):
     template_name = 'manage-books.html'
     model = Book
     paginate_by = 20
+
+    def get_queryset(self):
+        search = self.request.GET.get('search')
+        if search:
+            query = Q(title__icontains=search)
+            query.add(Q(authors__name__icontains=search), Q.OR)
+            query.add(Q(genre__genre_name__icontains=search), Q.OR)
+            book_list = Book.objects.filter(
+                query).select_related().distinct().order_by('title')
+        else:
+            book_list = Book.objects.all().distinct().order_by('title')
+        return book_list
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search = self.request.GET.get('search')
+        if search:
+            context['search'] = search
+        else:
+            context['search'] = ''
+        context['query_length'] = self.get_queryset().count()
+        return context
 
 
 class DeleteBook(StaffRequiredMixIn, SuccessMessageMixin, DeleteView):

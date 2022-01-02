@@ -93,6 +93,29 @@ class OrderUpdateViewTest(BaseTestData):
         updated = Order.objects.get(id=id)
         self.assertEqual(updated.pick_up_site, None)
 
+class StaffOrderUpdateViewTest(BaseTestData):
+
+    def test_order_is_updated(self):
+        login = self.client.login(username='user2', password='test4321')
+        user = User.objects.get(username='user')
+        order = make_order(user)
+        id = order.id
+        
+        response = self.client.post(reverse('library:staff-update', args=(id,)), {'status': 2})
+        self.assertEqual(response.url, '/manage/orders/')
+        updated = Order.objects.get(id=id)
+        self.assertEqual(str(updated.status), '2')
+        self.assertNotEqual(updated.date_expiry, None)
+
+class ManageBookViewTest(PaginationTestData):
+    def setUp(self):
+        login = self.client.login(username='user2', password='test4321')
+
+    def test_search_and_page_parameters(self):
+        response = self.client.get(
+            reverse('library:manage-books') + '?search=test&page=2')
+        self.assertEqual(len(response.context.get('book_list')), 2)
+
 
 class ManageOrdersViewTest(PaginationTestData):
     def setUp(self):

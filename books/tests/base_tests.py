@@ -38,7 +38,7 @@ class BaseTestData(TestCase):
         user = User.objects.create_user(
             username='user', password='test4321')
         user2 = User.objects.create_user(
-            username='user2', password='test4321', email='xd@asd.as')
+            username='user2', password='test4321', email='xd@asd.as', is_staff=True)
         group = Group.objects.get_or_create(name='moderators')
 
         author = Author.objects.create(
