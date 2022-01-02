@@ -1,14 +1,12 @@
-from django.http import response
-from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User, Group
-from datetime import date, datetime
+from django.contrib.auth.models import User
+from datetime import datetime
 
 from library.models import Author, BookItem, Genre, Book, Order, PickUpSite
-from .base_tests import BaseTestData
+from .base_tests import BaseTestData, PaginationTestData, make_order, get_or_none
 
 
-class BookListViewTest(BaseTestData):
+class BookListViewTest(PaginationTestData):
     def setUp(self):
         login = self.client.login(username='user', password='test4321')
 
@@ -27,7 +25,7 @@ class BookDetailViewTest(BaseTestData):
         self.assertEqual(len(response.context.get('items')), 1)
 
 
-class UserBooksViewTest(BaseTestData):
+class UserBooksViewTest(PaginationTestData):
         
     def test_user_orders_statuses_visible(self):
         login = self.client.login(username='user', password='test4321')
@@ -45,7 +43,31 @@ class UserBooksViewTest(BaseTestData):
         self.assertEqual(len(response.context.get('on_loan')), 1)
 
 
-class ManageOrdersViewTest(BaseTestData):
+class OrderDeleteViewTest(BaseTestData):
+
+    def test_order_is_deleted(self):
+        login = self.client.login(username='user', password='test4321')
+        user = User.objects.get(username='user')
+        order = make_order(user)
+        id = order.id
+
+        response = self.client.post(reverse('library:order-delete', args=(id,)))
+        self.assertEqual(response.status_code, 302)
+        deleted = get_or_none(Order, id=id)
+        self.assertEqual(deleted, None)
+
+    def test_delete_order_of_another_user(self):
+        login = self.client.login(username='user', password='test4321')
+        user2 = User.objects.get(username='user2')
+        id = make_order(user2).id
+
+        response = self.client.post(reverse('library:order-delete', args=(id,)))
+        self.assertEqual(response.url, '/list/')
+        deleted = get_or_none(Order, id=id)
+        self.assertNotEqual(deleted, None)
+
+
+class ManageOrdersViewTest(PaginationTestData):
     def setUp(self):
         login = self.client.login(username='user', password='test4321')
 
