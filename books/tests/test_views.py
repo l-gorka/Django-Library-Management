@@ -131,12 +131,44 @@ class DeleteBookViewTest(BaseTestData):
 
     def test_book_is_deleted(self):
         login = self.client.login(username='user2', password='test4321')
-        id = get_current_book_id()
+        id = Book.objects.all()[0].id
 
         response = self.client.post(reverse('library:book-delete', args=(id,)))
         deleted = get_or_none(Book, id=id)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(deleted, None)
+
+
+class UpdateBookViewTest(BaseTestData):
+
+    def test_book_is_updated(self):
+        login = self.client.login(username='user2', password='test4321')
+        id = Book.objects.all()[0].id
+
+        response = self.client.post(reverse('library:book-update', args=(id,)),
+                                    {'title': 'game of thrones',
+                                     'isbn': 'asde3',
+                                     'image': 'test_image',
+                                     'authors_str': 'author1, author2',
+                                     'genres_str': 'genre1, genre2',
+                                     })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Book.objects.all()[0].title, 'game of thrones')
+
+
+class CreateBookViewTest(BaseTestData):
+
+    def test_book_is_created(self):
+        login = self.client.login(username='user2', password='test4321')
+        response = self.client.post(reverse('library:add-book'),
+                                    {'title': 'game of thrones',
+                                     'isbn': 'asde3',
+                                     'image': 'test_image',
+                                     'authors_str': 'author1, author2',
+                                     'genres_str': 'genre1, genre2',
+                                     })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(Book.objects.all()), 2)
 
 
 class ManageOrdersViewTest(PaginationTestData):
