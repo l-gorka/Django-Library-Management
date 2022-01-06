@@ -1,6 +1,7 @@
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import request
 from django.shortcuts import redirect, render
+from django.urls.base import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
 from django.views.generic.edit import DeleteView, UpdateView
@@ -103,7 +104,12 @@ class UserBooks(LoginRequiredMixin, ListView):
 class OrderDelete(LoginRequiredMixin, DeleteView):
     model = Order
     template_name = 'order-delete.html'
-    success_url = reverse_lazy('library:user-books')
+    
+    def get_success_url(self):
+        if self.request.user.is_staff:
+            return reverse_lazy('library:manage-orders')
+        else:
+            return reverse_lazy('library:user-books')
 
     def dispatch(self, request, *args, **kwargs):
         object = super().get_object(queryset=None)
@@ -118,8 +124,13 @@ class OrderDelete(LoginRequiredMixin, DeleteView):
 class OrderUpdate(LoginRequiredMixin, UpdateView):
     model = Order
     template_name = 'order-update.html'
-    success_url = reverse_lazy('library:user-books')
     fields = ['pick_up_site', ]
+
+    def get_success_url(self):
+        if self.request.user.is_staff:
+            return reverse_lazy('library:manage-orders')
+        else:
+            return reverse_lazy('library:user-books')
 
     def dispatch(self, request, *args, **kwargs):
         object = super().get_object(queryset=None)
@@ -156,7 +167,7 @@ class ManageOrders(StaffRequiredMixIn, ListView):
             query = Q(user__username__contains=search)
         if status_choice:
             query.add(Q(status=status_choice), Q.AND)
-        qs = Order.objects.filter(query).order_by('date_created')
+        qs = Order.objects.filter(query).order_by('status')
         return qs
 
 
@@ -216,7 +227,7 @@ class DeleteBook(StaffRequiredMixIn, SuccessMessageMixin, DeleteView):
     model = Book
     template_name = 'book-delete.html'
     success_url = reverse_lazy('library:manage-books')
-    success_message = f"Deleted {Book.title}"
+    success_message = f"Book has been deleted."
 
 
 class UpdateBook(StaffRequiredMixIn, SuccessMessageMixin, UpdateView):
@@ -224,15 +235,15 @@ class UpdateBook(StaffRequiredMixIn, SuccessMessageMixin, UpdateView):
     template_name = 'book-update.html'
     form_class = BookForm
     success_url = reverse_lazy('library:manage-books')
-    success_message = 'Book updated'
+    success_message = 'Book has been updated.'
 
 
 class CreateBook(StaffRequiredMixIn, SuccessMessageMixin, CreateView):
     model = Book
-    template_name = 'book-update.html'
+    template_name = 'book-create.html'
     form_class = BookForm
     success_url = reverse_lazy('library:manage-books')
-    success_message = 'Book created'
+    success_message = 'Book has been created.'
 
 
 class CreateBookItem(StaffRequiredMixIn, CreateView):

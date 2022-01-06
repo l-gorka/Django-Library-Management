@@ -40,7 +40,7 @@
               </div>
             </div>
             <div class="m-1">
-              <button type="submit" value="Search" class=" btn btn-primary">Show orders</button>
+              <button type="submit" value="Search" class=" btn btn-primary">Show books</button>
             </div>
             <div class="m-1">
               <a href="{% url 'library:add-book' %}" class="btn btn-success">Add a book</a>
@@ -69,6 +69,7 @@
                   <a class=" btn btn-sm btn-outline-success me-1"
                     href="{% url 'library:book-update' book.id %}">Update</a>
                   <a class=" btn btn-sm btn-outline-danger" href="{% url 'library:book-delete' book.id %}">Delete</a>
+                  
                 </div>
               </div>
             </div>

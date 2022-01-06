@@ -17,7 +17,7 @@
   </div>
   <div class="grid">
     <div class="row justify-content-center justify-content-md-evenly">
-      <div class="col-12 col-sm-11 col-md-8 mx-2">
+      <div class="col-12 col-lg-8 mx-2">
         <div class="detail-wrapper card p-3 mb-2 mb-lg-4 shadow">
           <p class="">Author(s): {% for author in book.authors.all %}
             <a href="{%url 'library:book-list'%}?search={{ author|urlencode }}">
@@ -34,24 +34,40 @@
           <p class="">ISBN: {{ book.isbn }}</p>
           <p class="">{{ book.description }}</p>
           <hr class="text-dark">
-          <p class="lead">There {{items|pluralize:"is,are"}} {{items|length}} cop{{items|pluralize:"y,ies"}} of this book in the library:</p>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <p class="lead">There {{items|pluralize:"is,are"}} {{items|length}} cop{{items|pluralize:"y,ies"}} of this
+              book in the library:</p>
+            {% if user.is_staff %}
+            <a href="{% url 'library:add-book-item' book.id%}" class=""><button class="btn btn-success me-1 me-lg-2">Add
+                copy</button></a>
+            {% endif %}
+          </div>
           <ul class="list-group">
             {% for item in items %}
             <li class="list-group-item d-sm-flex justify-content-between">
-              <span>Book ID: {{ item.pk }}</span>
+              <div>
+                <span>Book ID: {{ item.pk }}</span>
+              </div>
               {% if item.issued_to == None %}
-              <form action="{%url 'library:order-create' item.pk %}" class=" form-control-sm m-0 p-0" method="POST">
-                {% csrf_token %}
-                <div class="d-flex">
-                  <input type="hidden" name="pk" value="{{item.pk }}">
-                  <select name="site" class=" form-select form-select-sm mx-2" id="site">
-                    {% for site in sites %}
-                    <option value="{{ site.id }}">{{ site.site }}</option>
-                    {% endfor %}
-                  </select>
-                  <button class=" btn btn-sm btn-outline-primary">Request</button>
-                </div>
-              </form>
+              <div class="form-wrapper d-flex justify-content-end">
+                <form action="{%url 'library:order-create' item.pk %}" class=" form-control-sm m-0 p-0" method="POST">
+                  {% csrf_token %}
+                  <div class="d-flex">
+                    <input type="hidden" name="pk" value="{{item.pk }}">
+                    <select name="site" class=" form-select form-select-sm mx-2" id="site">
+                      {% for site in sites %}
+                      <option value="{{ site.id }}">{{ site.site }}</option>
+                      {% endfor %}
+                    </select>
+                    <button class=" btn btn-sm btn-outline-primary me-2">Request</button>
+
+                  </div>
+                </form>
+                {% if user.is_staff %}
+                <a href="{% url 'library:delete-book-item' book=book.id pk=item.id%}"><button
+                    class="btn btn-sm btn-outline-danger">Delete</button></a>
+                {% endif %}
+              </div>
               {% else %}
               {% if item.expiry_date %}
               <span>The book should be aviable at {{ item.expiry_date }}.</span>
@@ -59,12 +75,13 @@
               <span>The book is reserved at the moment.</span>
               {% endif %}
               {% endif %}
+
             </li>
             {% endfor %}
           </ul>
         </div>
       </div>
-      <div class="col-12 col-md-3 d-none d-md-block">
+      <div class="col-12 col-lg-3 d-none d-lg-block">
         <div class="image-wrapper">
           <img src="{{ book.image }}" class="image-fluid shadow" style="max-width: 100%; height: auto;" alt="">
         </div>

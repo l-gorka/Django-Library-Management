@@ -16,7 +16,7 @@
       <h1 class=" display-6 m-2 mt-4">Manage orders</h1>
     </div>
     <div class="m-2 mt-3">
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-pills">
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{% url 'library:manage-orders' %}">Orders</a>
         </li>
@@ -29,8 +29,7 @@
   <section id="search"">
   <div class=" grid">
     <div class="row">
-      <div class="col-11 col-lg-8 d-flex justify-content-end">
-        <div class="form-wrapper m-3 mt-4">
+      <div class="mt-4 mb-2">
         <form action="" class="d-flex " method="get">
           <div class="m-1">
             <input type="search" placeholder="search" class="form-control rounded-3" name="search"
@@ -49,66 +48,39 @@
           <div class="m-1">
             <button type="submit" value="Search" class=" btn btn-primary">Show orders</button>
           </div>
-        </div>
-
-
         </form>
       </div>
     </div>
+    </div>
   </section>
-  <section id="books">
+  <section id="orders">
     <div class="grid">
-      <div class="row justify-content-center">
-        <div class="col-12">
-          <ul class=" list-group border-0">
-            {% if order_list %}
-            {% for book in order_list %}
-            <div class="card rounded-3 m-2">
-              <div class="grid">
-                <div class="row d-md-flex align-items-center">
-                  <div class="col-2">
-                    <span class="ms-1">Order no. {{book.id}}</span>
-                  </div>
-                  <div class="col-4 border-start">
-                    <span class=" text-truncate d-block">Book id: {{book.item.id}}</span>
-                  </div>
-                  <div class="col-4">
-                    <span class="ms-1">Created: {{book.date_created}}</span>
-                  </div>
-                  <div class="col-2 my-2 justify-content-end d-flex">
-                    <form class="m-0 p-0" action="{% url 'library:staff-update' book.id %}" method="get">
-                      {% csrf_token %}
-                      <button class=" btn btn-sm btn-outline-success me-2">Edit</button>
-                    </form>
-                    <form class="m-0 p-0" action="{% url 'library:order-delete' book.id %}" method="get">
-                      {% csrf_token %}
-                      <button class=" btn btn-sm btn-outline-danger me-2">Cancel</button>
-                    </form>
-                  </div>
-                </div>
-                <div class="row d-md-flex align-items-center mb-2">
-                  <div class="col-2">
-                    <span class=""><span class="ms-1">User: {{book.user}}</span>
-                    
-                  </div>
-                  <div class="col-4 border-start">
-                    <span class=" text-truncate d-block">{{book.item}}</span>
-                  </div>
-                  <div class="col-4">
-                    <span class=""><span class="d-none d-md-inline">Pick up site:</span>
-                      {{book.pick_up_site}}</span>
-                  </div>
-                  <div class="col-2 my-2 justify-content-end d-flex">
-                  </div>
-                </div>
+      <div class="row justify-content-start">
+        {% for order in order_list %}
+        <div class="col-md-6 col-lg-4">
+          <div class="card-wrapper card shadow mb-3">
+            <div class="card-header d-flex justify-content-between">
+              <span class="fw-bold">#{{order.id}}</span>
+              <span>Status: {{order.get_status_display}}</span>        
+            </div>
+            <div class="card-body lh-1">
+              <p class="">User: {{order.user.username}}</p>
+              <p class="">Item: #{{order.item.id}}</p>
+              <p>Date created: {{order.date_created}}</p>
+              <p>Date loaned: {% if order.date_picked %}{{order.date_picked}}{% else %}{%endif%} -</p>
+              <p>Date expiry: {% if order.date_expiry %}{{order.date_expiry}}{% else %}{%endif%} -</p>
+              <p>Date returned: {% if order.date_returned %}{{order.date_returned}}{% else %}{%endif%} -</p>
+            </div>
+            <div class="card footer">
+              <div class="d-flex justify-content-end p-2">
+                <a href="{% url 'library:staff-update' order.id %}" class=" btn btn-outline-success me-2">Change status</a>
+                <a href="{% url 'library:order-delete' order.id %}" class=" btn btn-outline-danger me-1">Delete</a>
               </div>
             </div>
-            {% endfor %}
-          </ul>
-          {% else %}
-          <p>nothing to show here</p>
-          {% endif %}
+          </div>
+          
         </div>
+        {% endfor %}
       </div>
     </div>
   </section>
