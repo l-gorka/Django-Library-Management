@@ -23,33 +23,32 @@
       <p class=" lead m-2 ms-3">Number of books: {{query_length}}</p>
     </div>
     {% endif %}
-    <div class=" d-block d-md-flex">
-      <form action="{% url 'library:book-list' %}" class=" " method="get">
-        <input type="search" placeholder="" class=" rounded-3 m-2" name="search" value="{% if search %}{{search}}{% else %}{% endif %}">
-        <button type="submit" class=" btn btn-primary">Search</button>
+    <div class="form-wrapper m-3 mt-4">
+      <form action="" class=" d-flex">
+        <div class="m-1">
+          <input type="search" placeholder="search" class="form-control rounded-3" name="search"
+            aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
+          <div id="search-help" class="ms-1 form-text">
+            <span class>Search by title, author or genre</span>
+          </div>
+        </div>
+        <div class="m-1">
+          <button type="submit" value="Search" class=" btn btn-primary">Search</button>
+        </div>
       </form>
-      <p class=" lead m-2"> Type book title, author name or genre</p>
     </div>
   </section>
   <section id="books">
     <div class="">
       <div class="grid">
-        <p class=" lead "></p>
         <div class="row justify-content-center">
           <div class="col-12">
             <ul class=" list-group border-0">
               {% for book in book_list %}
-              {% if forloop.counter|divisibleby:2 %}
-              <li class=" list-group-item bg-light">
+              <li class=" list-group-item {% cycle 'bg-light' 'bg-white' %}">
                 <a href="{% url 'library:book-detail' book.id%}" class=" link-dark">{{book.title}} -
                   {{book.authors.all|join:', '}}</a>
               </li>
-              {% else %}
-              <li class=" list-group-item">
-                <a href="{% url 'library:book-detail' book.id%}" class=" link-dark">{{book.title}} -
-                  {{book.authors.all|join:', '}}</a>
-              </li>
-              {% endif %}
               {% endfor %}
             </ul>
           </div>

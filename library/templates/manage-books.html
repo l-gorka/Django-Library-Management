@@ -29,76 +29,80 @@
   <section id="search"">
     <div class=" grid">
     <div class="row">
-      <div class=" col-12 input-group px-5 my-2">
-        <form action="" class="d-flex " method="get">
-          <div class="m-1">
-            <input type="search" placeholder="search" class="form-control rounded-3" name="search"
-              aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
-            <div id="search-help" class="ms-1 form-text">
-              <span>Search by title, author or genre</span>
+      <div class="col-10 col-lg-6 d-flex justify-content-end">
+        <div class="form-wrapper m-3 mt-4">
+          <form action="" class=" d-flex">
+            <div class="m-1">
+              <input type="search" placeholder="search" class="form-control rounded-3" name="search"
+                aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
+              <div id="search-help" class="ms-1 form-text">
+                <span class>Search by title, author or genre</span>
+              </div>
             </div>
-          </div>
-          <div class="m-1">
-            <button type="submit" value="Search" class=" btn btn-primary">Show orders</button>
-          </div>
-        </form>
-        <div class="m-1">
-          <a href="{% url 'library:add-book' %}" class="btn btn-success">Add a book</a>
+            <div class="m-1">
+              <button type="submit" value="Search" class=" btn btn-primary">Show orders</button>
+            </div>
+            <div class="m-1">
+              <a href="{% url 'library:add-book' %}" class="btn btn-success">Add a book</a>
+            </div>
+          </form>
         </div>
       </div>
     </div>
+</div>
 
-  </section>
-  <section id="books">
-    <div class="grid">
-      <div class="row justify-content-center">
-        <div class="col-12">
-          <ul class=" list-group border-0">
-            {% if book_list %}
-            {% for book in book_list %}
-            <div class="card rounded-3 {%cycle 'bg-light' 'bg-white' %} m-1">
-              <div class="grid">
-                <div class="row align-items-center d-flex m-1">
-                  <div class="col-10">
-                    <a href="{% url 'library:book-detail' book.id %}" class="">{{ book.title}}</a>
-                  </div>
-                  <div class="col-2 d-flex justify-content-end">
-                    <a class=" btn btn-sm btn-outline-success me-1" href="{% url 'library:book-update' book.id %}">Update</a>
-                    <a class=" btn btn-sm btn-outline-danger" href="{% url 'library:book-delete' book.id %}">Delete</a>
-                  </div>
+</section>
+<section id="books">
+  <div class="grid">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <ul class=" list-group border-0">
+          {% if book_list %}
+          {% for book in book_list %}
+          <div class="card rounded-3 {%cycle 'bg-light' 'bg-white' %} m-1">
+            <div class="grid">
+              <div class="row align-items-center d-flex m-1">
+                <div class="col-10">
+                  <a href="{% url 'library:book-detail' book.id %}" class="">{{ book.title}}</a>
+                </div>
+                <div class="col-2 d-flex justify-content-end">
+                  <a class=" btn btn-sm btn-outline-success me-1"
+                    href="{% url 'library:book-update' book.id %}">Update</a>
+                  <a class=" btn btn-sm btn-outline-danger" href="{% url 'library:book-delete' book.id %}">Delete</a>
                 </div>
               </div>
             </div>
-            {% endfor %}
-          </ul>
-          {% else %}
-          <p>nothing to show here</p>
-          {% endif %}
-        </div>
+          </div>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>Nothing to show here.</p>
+        {% endif %}
       </div>
     </div>
-  </section>
-  <section id="paginate">
-    {% if page_obj.paginator.num_pages > 1 %}
-    <div class=" justify-content-center my-2">
-      <ul class="pagination d-flex justify-content-center">
-        {% if page_obj.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page=1&search={{search}}">&laquo first</a></li>
-        <li class="page-item"><a class="page-link"
-            href="?page={{ page_obj.previous_page_number }}&search={{search}}">previous</a></li>
-        {% endif %}
-        <li class="page-item page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</li>
-        {% if page_obj.has_next %}
-        <li class="page-item"><a class="page-link"
-            href="?page={{ page_obj.next_page_number }}&search={{search}}">next</a></li>
-        <li class="page-item"><a class="page-link"
-            href="?page={{ page_obj.paginator.num_pages }}&search={{search}}">last &raquo;</a></li>
-        {% endif %}
-      </ul>
-    </div>
-    {% else %}
-    {% endif %}
-  </section>
+  </div>
+</section>
+<section id="paginate">
+  {% if page_obj.paginator.num_pages > 1 %}
+  <div class=" justify-content-center my-2">
+    <ul class="pagination d-flex justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page=1&search={{search}}">&laquo first</a></li>
+      <li class="page-item"><a class="page-link"
+          href="?page={{ page_obj.previous_page_number }}&search={{search}}">previous</a></li>
+      {% endif %}
+      <li class="page-item page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</li>
+      {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{search}}">next</a>
+      </li>
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&search={{search}}">last
+          &raquo;</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% else %}
+  {% endif %}
+</section>
 </div>
 
 
