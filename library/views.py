@@ -121,10 +121,11 @@ class OrderDelete(LoginRequiredMixin, DeleteView):
             return redirect('library:book-list')
 
 
-class OrderUpdate(LoginRequiredMixin, UpdateView):
+class OrderUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Order
     template_name = 'order-update.html'
     fields = ['pick_up_site', ]
+    success_message = 'Order has been updated.'
 
     def get_success_url(self):
         if self.request.user.is_staff:
