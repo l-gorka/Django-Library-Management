@@ -83,22 +83,26 @@ def order_create(request, **kwargs):
 
 
 class UserBooks(LoginRequiredMixin, ListView):
-    model = Order
-    template_name = 'user-books.html'
+    template_name = 'user-orders.html'
+    paginate_by = 20
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        reserved = Order.objects.filter(user=self.request.user, status=0)
-        context['reserved'] = reserved
-
-        waiting = Order.objects.filter(user=self.request.user, status=1)
-        context['waiting'] = waiting
-
-        on_loan = Order.objects.filter(user=self.request.user, status=2)
-        context['on_loan'] = on_loan
-
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['choices'] = StatusChoices
+        context['search'] = self.request.GET.get('search')
+        context['status'] = self.request.GET.get('status')
         return context
+
+    def get_queryset(self):
+        search = self.request.GET.get('search')
+        status_choice = self.request.GET.get('status')
+        query = Q(user=self.request.user)
+        if search:
+            query = Q(item__book_item__title__icontains=search)
+        if status_choice:
+            query.add(Q(status=status_choice), Q.AND)
+        qs = Order.objects.filter(query).order_by('status')
+        return qs
 
 
 class OrderDelete(LoginRequiredMixin, DeleteView):
@@ -165,7 +169,7 @@ class ManageOrders(StaffRequiredMixIn, ListView):
         status_choice = self.request.GET.get('status')
         query = Q()
         if search:
-            query = Q(user__username__contains=search)
+            query = Q(user__username__icontains=search)
         if status_choice:
             query.add(Q(status=status_choice), Q.AND)
         qs = Order.objects.filter(query).order_by('status')

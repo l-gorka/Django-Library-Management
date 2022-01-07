@@ -24,7 +24,7 @@
           <div class="m-1">
             <input type="search" placeholder="search" class="form-control rounded-3" name="search"
               aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
-            <div id="search-help" class="ms-1 form-text">Enter username</div>
+            <div id="search-help" class="ms-1 form-text">Enter book title</div>
           </div>
           <div class="m-1">
             <select name="status" id="choice-select" class="form-select">
@@ -54,8 +54,7 @@
               <span>Status: {{order.get_status_display}}</span>        
             </div>
             <div class="card-body lh-1">
-              <p class="">User: {{order.user.username}}</p>
-              <p class=" text-truncate">Item: #{{order.item.id}}</p>
+              <p class=" text-truncate">{{order.item}}</p>
               <p>Date created: {{order.date_created}}</p>
               <p>Date loaned: {% if order.date_picked %}{{order.date_picked}}{% else %} - {%endif%}</p>
               <p>Date expiry: {% if order.date_expiry %}{{order.date_expiry}}{% else %} - {%endif%}</p>
@@ -63,8 +62,8 @@
             </div>
             <div class="card footer">
               <div class="d-flex justify-content-end p-2">
-                <a href="{% url 'library:staff-update' order.id %}" class=" btn btn-outline-success me-2">Change status</a>
-                <a href="{% url 'library:order-delete' order.id %}" class=" btn btn-outline-danger me-1">Delete</a>
+                <a href="{% url 'library:order-delete' order.id %}" 
+                class=" btn btn-outline-danger me-1">Delete</a>
               </div>
             </div>
           </div>
