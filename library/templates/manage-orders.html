@@ -22,12 +22,12 @@
       <div class="mb-2 form-wrapper">
         <form action="" class="d-flex " method="get">
           <div class="m-1">
-            <input type="search" placeholder="search" class="form-control rounded-3" name="search"
+            <input type="search" placeholder="search" class="form-control rounded-3 shadow" name="search"
               aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
             <div id="search-help" class="ms-1 form-text">Enter username</div>
           </div>
           <div class="m-1">
-            <select name="status" id="choice-select" class="form-select">
+            <select name="status" id="choice-select" class="form-select shadow">
               <option value=""{% if not status %}selected{% endif %}>All</option>
               {%for choice in choices%}
               <option value="{{choice}}" {% if status == choice.value|stringformat:"i" %}selected{% endif %}>{{choice.label}}</option>
@@ -36,7 +36,7 @@
             <div id="status-help" class="ms-1 form-text">Select status</div>
           </div>
           <div class="m-1">
-            <button type="submit" value="Search" class=" btn btn-primary">Show orders</button>
+            <button type="submit" value="Search" class=" btn btn-primary shadow">Show orders</button>
           </div>
         </form>
       </div>
@@ -79,13 +79,13 @@
     <div class=" justify-content-center my-2">
       <ul class="pagination d-flex justify-content-center">
         {% if page_obj.has_previous %}
-        <li class="page-item"><a class="page-link" href="?page=1&search={% if search %}{{search}}{% else %}{%endif%}&status={%if status%}{{status}}{% else %}{%endif%}">first</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={% if search %}{{search}}{% else %}{%endif%}&status={%if status%}{{status}}{% else %}{%endif%}">previous</a></li>
+        <li class="page-item"><a class="page-link" href="?page=1&search={{search}}&status={{status}}">first</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{search}}&status={{status}}">previous</a></li>
         {% endif %}
         <li class="page-item page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</li>
         {% if page_obj.has_next %}
-        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={% if search %}{{search}}{% else %}{%endif%}&status={%if status%}{{status}}{% else %}{%endif%}">next</a></li>
-        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&search={% if search %}{{search}}{% else %}{%endif%}&status={%if status%}{{status}}{% else %}{%endif%}">last&raquo;</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{search}}&status={{status}}">next</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&search={{search}}&status={{status}}">last&raquo;</a></li>
         {% endif %}
       </ul>
     </div>

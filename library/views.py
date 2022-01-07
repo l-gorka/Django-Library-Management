@@ -89,8 +89,16 @@ class UserBooks(LoginRequiredMixin, ListView):
     def get_context_data(self):
         context = super().get_context_data()
         context['choices'] = StatusChoices
-        context['search'] = self.request.GET.get('search')
-        context['status'] = self.request.GET.get('status')
+        search = self.request.GET.get('search')
+        if search:
+            context['search'] = search
+        else:
+            context['search'] = ''
+        status = self.request.GET.get('status')
+        if status:
+            context['status'] = status
+        else:
+            context['status'] = ''
         return context
 
     def get_queryset(self):
@@ -160,8 +168,16 @@ class ManageOrders(StaffRequiredMixIn, ListView):
     def get_context_data(self):
         context = super().get_context_data()
         context['choices'] = StatusChoices
-        context['search'] = self.request.GET.get('search')
-        context['status'] = self.request.GET.get('status')
+        search = self.request.GET.get('search')
+        if search:
+            context['search'] = search
+        else:
+            context['search'] = ''
+        status = self.request.GET.get('status')
+        if status:
+            context['status'] = status
+        else:
+            context['status'] = ''
         return context
 
     def get_queryset(self):

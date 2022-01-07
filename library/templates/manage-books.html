@@ -23,17 +23,17 @@
         <div class="form-wrapper m-3 mt-4">
           <form action="" class=" d-flex">
             <div class="m-1">
-              <input type="search" placeholder="search" class="form-control rounded-3" name="search"
+              <input type="search" placeholder="search" class="form-control rounded-3 shadow" name="search"
                 aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
               <div id="search-help" class="ms-1 form-text">
                 <span class>Search by title, author or genre</span>
               </div>
             </div>
             <div class="m-1">
-              <button type="submit" value="Search" class=" btn btn-primary">Show books</button>
+              <button type="submit" value="Search" class=" btn btn-primary shadow">Show books</button>
             </div>
             <div class="m-1">
-              <a href="{% url 'library:add-book' %}" class="btn btn-success">Add a book</a>
+              <a href="{% url 'library:add-book' %}" class="btn btn-success shadow">Add a book</a>
             </div>
           </form>
         </div>

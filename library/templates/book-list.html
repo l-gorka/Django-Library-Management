@@ -19,21 +19,21 @@
     </div>
     {% else %}
     <div class=" ">
-      <h1 class=" h1 ms-3 mt-3">Showing all books in database</h1>
+      <h1 class=" h1 ms-3 mt-3">Showing all books in the database</h1>
       <p class=" lead m-2 ms-3">Number of books: {{query_length}}</p>
     </div>
     {% endif %}
     <div class="form-wrapper m-3 mt-4">
       <form action="" class=" d-flex">
         <div class="m-1">
-          <input type="search" placeholder="search" class="form-control rounded-3" name="search"
+          <input type="search" placeholder="search" class="form-control rounded-3 shadow" name="search"
             aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
           <div id="search-help" class="ms-1 form-text">
             <span class>Search by title, author or genre</span>
           </div>
         </div>
         <div class="m-1">
-          <button type="submit" value="Search" class=" btn btn-primary">Search</button>
+          <button type="submit" value="Search" class=" btn btn-primary shadow">Search</button>
         </div>
       </form>
     </div>
@@ -43,14 +43,26 @@
       <div class="grid">
         <div class="row justify-content-center">
           <div class="col-12">
-            <ul class=" list-group border-0">
-              {% for book in book_list %}
-              <li class=" list-group-item {% cycle 'bg-light' 'bg-white' %}">
-                <a href="{% url 'library:book-detail' book.id%}" class=" link-dark">{{book.title}} -
-                  {{book.authors.all|join:', '}}</a>
-              </li>
-              {% endfor %}
-            </ul>
+            <div class="table-wrapper card shadow p-3">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author/s</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for book in book_list %}
+                  <tr scope="row">
+                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.id}}</a></td>
+                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.title}}</a></td>
+                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.authors.all|join:", "}}</a></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
