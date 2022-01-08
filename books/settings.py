@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'books.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'testlib',
+        'NAME': 'another_db',
         'USER': 'postgres',
         'PASSWORD': 'Pass2020!',
         'HOST': '127.0.0.1',

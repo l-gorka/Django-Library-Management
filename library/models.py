@@ -61,8 +61,8 @@ class Genre(models.Model):
 class Book(models.Model):
     isbn = models.CharField(max_length=50)
     title = models.CharField(max_length=200)
-    authors = models.ManyToManyField(Author)
-    genre = models.ManyToManyField(Genre)
+    authors = models.ManyToManyField(Author, through='ThroughAuthor')
+    genre = models.ManyToManyField(Genre, through='ThroughGenre')
     description = models.TextField(null=True, blank=True)
     image = models.CharField(
         max_length=200, default='https://isocarp.org/app/uploads/2014/05/noimage.jpg')
@@ -71,6 +71,14 @@ class Book(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+class ThroughGenre(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+
+class ThroughAuthor(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
 
 class BookItem(models.Model):
