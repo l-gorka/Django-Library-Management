@@ -1,17 +1,20 @@
 import csv
+import datetime
 import random
 from os import error
 import sys
 from library.models import Book, Author, Genre
+from timeit import default_timer as timer
 
 
 def run():
+    start = timer()
     with open('books.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
-        # add 100 records
+        # add 200 records
         x = 0
         for row in reader:
-            if x > 100:
+            if x > 200:
                 break
             try:
                 authors = row['author'].split(',')
@@ -32,7 +35,7 @@ def run():
                                                         format=row['bookformat'],
                                                         isbn=row['isbn'],
                                                         )
-                print(b.id, b.title)
+                #print(b.id, b.title)
                 for author in authors_objects:
                     b.authors.add(author)
                 for genre in genres_objects:
@@ -42,3 +45,5 @@ def run():
                 print(e)
 
             x += 1
+        stop = timer()
+        print('books time: ', datetime.timedelta(seconds=stop-start))
