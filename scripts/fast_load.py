@@ -8,20 +8,21 @@ from multiprocessing.pool import ThreadPool as Pool
 
 
 def run():
-    g = genres()
-    a = authors()
-    books(g, a)
+    genres_created = genres()
+    authors_created = authors()
+    books(genres_created, authors_created)
 
 
 def genres():
     start = timer()
-    with open('books-min.csv', newline='') as csv_file:
+    with open('books.csv', newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         genres_list = []
         for row in reader:
             genres_list.extend([genre for genre in row['genre'].split(',')])
-        genres_objects = [Genre(genre_name=genre)
-                          for genre in list(set(genres_list))]
+        genres_set = list(dict.fromkeys(genres_list))
+        genres_objects = [Genre(genre_name=genre) for genre in genres_set]
+
         print('genres list', len(genres_list))
         print('genres set', len(genres_objects))
         genres_created = Genre.objects.bulk_create(
@@ -29,38 +30,35 @@ def genres():
 
         stop = timer()
         print('genres time ', datetime.timedelta(seconds=stop-start))
-        genres = []
-        for item in genres_created:
-            genres.append([item.id, item.genre_name])
-        return genres
-
+        genres_ordered = []
+        for obj in genres_created:
+            genres_ordered.append(obj.genre_name)
+        return genres_ordered
 
 def authors():
     start = timer()
-    with open('books-min.csv', newline='') as csv_file:
+    with open('books.csv', newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         authors_list = []
         for row in reader:
             authors_list.extend(
                 [author for author in row['author'].split(',')])
-        genres_objects = [Author(name=author)
-                          for author in list(set(authors_list))]
+        authors_set = list(dict.fromkeys(authors_list))
+        authors_objects = [Author(name=author) for author in authors_set]
         print('authors list', len(authors_list))
-        print('authors set', len(genres_objects))
+        print('authors set', len(authors_objects))
         authors_created = Author.objects.bulk_create(
-            genres_objects, batch_size=200)
+            authors_objects, batch_size=200)
 
         stop = timer()
         print('authors time: ', datetime.timedelta(seconds=stop-start))
-        authors = []
-        for author in authors_created:
-            authors.append([author.id, author.name])
-        return authors
+        authors_created = [author.name for author in authors_created]
+        return authors_created
 
 
 def books(genres_objects, authors_objects):
     start = timer()
-    with open('books-min.csv', newline='') as csv_file:
+    with open('books.csv', newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         i = 0
         book_list = []
@@ -76,7 +74,7 @@ def books(genres_objects, authors_objects):
 
         Book.objects.bulk_create(book_list)
 
-    with open('books-min.csv', newline='') as csv_file:
+    with open('books.csv', newline='') as csv_file:
         reader = csv.DictReader(csv_file)
         i = 1
         through_genre = []
@@ -84,13 +82,13 @@ def books(genres_objects, authors_objects):
         for row in reader:
             genres = row['genre'].split(',')
             for genre in genres:
-                id = genres_objects.index(genre)
+                id = genres_objects.index(genre) + 1
                 obj = ThroughGenre(book_id=i, genre_id=id)
                 through_genre.append(obj)
 
             authors = row['author'].split(',')
             for author in authors:
-                id = authors_objects.index(author)
+                id = authors_objects.index(author) + 1
                 obj = ThroughAuthor(book_id=i, author_id=id)
                 through_author.append(obj)
 
@@ -101,14 +99,14 @@ def books(genres_objects, authors_objects):
         ThroughGenre.objects.bulk_create(through_genre, batch_size=500)
         ThroughAuthor.objects.bulk_create(through_author, batch_size=500)
         stop = timer()
-        print('books-min time: ', datetime.timedelta(seconds=stop-start))
+        print('books time: ', datetime.timedelta(seconds=stop-start))
 
 
 def multi_books():
     start = timer()
 
     def get_next_line():
-        with open('books-min.csv', 'r', newline='') as csvfile:
+        with open('books.csv', 'r', newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 yield row
@@ -147,7 +145,7 @@ def multi_books():
 def multi_books_two():
 
     def get_next_line():
-        with open('books-min.csv', 'r', newline='') as csvfile:
+        with open('books.csv', 'r', newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 yield row

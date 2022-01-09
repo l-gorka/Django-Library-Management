@@ -26,11 +26,11 @@ class BookListView(ListView):
             query.add(Q(authors__name__icontains=search), Q.OR)
             query.add(Q(genre__genre_name__icontains=search), Q.OR)
             book_list = Book.objects.filter(
-                query).select_related().distinct().order_by('title')
+                query).distinct().order_by('title')
         else:
             book_list = Book.objects.all().distinct().order_by('title')
         return book_list
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         search = self.request.GET.get('search')
@@ -116,7 +116,7 @@ class UserBooks(LoginRequiredMixin, ListView):
 class OrderDelete(LoginRequiredMixin, DeleteView):
     model = Order
     template_name = 'order-delete.html'
-    
+
     def get_success_url(self):
         if self.request.user.is_staff:
             return reverse_lazy('library:manage-orders')
@@ -232,7 +232,7 @@ class ManageBooks(StaffRequiredMixIn, ListView):
         else:
             book_list = Book.objects.all().distinct().order_by('title')
         return book_list
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         search = self.request.GET.get('search')

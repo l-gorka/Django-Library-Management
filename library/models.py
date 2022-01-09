@@ -72,9 +72,11 @@ class Book(models.Model):
     def __str__(self) -> str:
         return self.title
 
+
 class ThroughGenre(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+
 
 class ThroughAuthor(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
@@ -136,7 +138,6 @@ def order_save(sender, instance, **kwargs):
         book_item.issue_date = None
         book_item.expiry_date = None
         book_item.save()
-
 
 
 post_save.connect(order_save, sender=Order)
