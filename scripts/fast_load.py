@@ -10,8 +10,7 @@ from multiprocessing.pool import ThreadPool as Pool
 def run():
     g = genres()
     a = authors()
-    books-min(g, a)
-    
+    books(g, a)
 
 
 def genres():
@@ -25,7 +24,8 @@ def genres():
                           for genre in list(set(genres_list))]
         print('genres list', len(genres_list))
         print('genres set', len(genres_objects))
-        genres_created = Genre.objects.bulk_create(genres_objects, batch_size=200)
+        genres_created = Genre.objects.bulk_create(
+            genres_objects, batch_size=200)
 
         stop = timer()
         print('genres time ', datetime.timedelta(seconds=stop-start))
@@ -33,7 +33,6 @@ def genres():
         for item in genres_created:
             genres.append([item.id, item.genre_name])
         return genres
-
 
 
 def authors():
@@ -48,7 +47,8 @@ def authors():
                           for author in list(set(authors_list))]
         print('authors list', len(authors_list))
         print('authors set', len(genres_objects))
-        authors_created = Author.objects.bulk_create(genres_objects, batch_size=200)
+        authors_created = Author.objects.bulk_create(
+            genres_objects, batch_size=200)
 
         stop = timer()
         print('authors time: ', datetime.timedelta(seconds=stop-start))
@@ -58,8 +58,7 @@ def authors():
         return authors
 
 
-
-def books-min(genres_objects, authors_objects):
+def books(genres_objects, authors_objects):
     start = timer()
     with open('books-min.csv', newline='') as csv_file:
         reader = csv.DictReader(csv_file)
@@ -74,7 +73,7 @@ def books-min(genres_objects, authors_objects):
                 format=row['bookformat'],
                 isbn=row['isbn'],
             ))
-        
+
         Book.objects.bulk_create(book_list)
 
     with open('books-min.csv', newline='') as csv_file:
@@ -85,16 +84,16 @@ def books-min(genres_objects, authors_objects):
         for row in reader:
             genres = row['genre'].split(',')
             for genre in genres:
-                id = [item[0] for item in genres_objects if item[1] == genre][0]
+                id = genres_objects.index(genre)
                 obj = ThroughGenre(book_id=i, genre_id=id)
                 through_genre.append(obj)
 
             authors = row['author'].split(',')
             for author in authors:
-                id = [item[0] for item in authors_objects if item[1] == author][0]
+                id = authors_objects.index(author)
                 obj = ThroughAuthor(book_id=i, author_id=id)
                 through_author.append(obj)
-            
+
             i += 1
             if i % 1000 == 0:
                 print('processed', i)
@@ -142,7 +141,7 @@ def multi_books():
         t.map(process_book, (row,))
     t.close()
     stop = timer()
-    print('books-min time: ', datetime.timedelta(seconds=stop-start))
+    print('books time: ', datetime.timedelta(seconds=stop-start))
 
 
 def multi_books_two():
@@ -180,4 +179,4 @@ def multi_books_two():
         t.apply(process_book, (row,))
     t.close()
     stop = timer()
-    print('books-min time: ', datetime.timedelta(seconds=stop-start))
+    print('books time: ', datetime.timedelta(seconds=stop-start))
