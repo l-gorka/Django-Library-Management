@@ -11,44 +11,9 @@
 {% extends 'base-menu.html' %}
 {% block content %}
 <div class="container-fluid" style="min-height: 84vh;">
-  <section id="search">
-    {% if search %}
-    <div class=" ">
-      <h1 class=" h1 ms-3 mt-3">Showing results for {{ search }}</h1>
-      <p class=" lead m-2 ms-3">Number of results: {{query_length}}</p>
-    </div>
-    {% else %}
-    <div class=" ">
-      <h1 class=" h1 ms-3 mt-3">Showing all authors in the database</h1>
-      <p class=" lead m-2 ms-3">Number of authors: {{query_length}}</p>
-    </div>
-    {% endif %}
-    <div class="form-wrapper m-3 mt-4">
-      <form action="" class=" d-flex">
-        <div class="m-1">
-          <input type="search" placeholder="search" class="form-control rounded-3 shadow" name="search"
-            aria-describedby="search-help" value="{% if search %}{{search}}{% else %}{% endif %}">
-            <div class="mt-2">
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="option" id="inlineRadio1" value="1">
-                <label class="form-check-label" for="inlineRadio1">Book</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="option" id="inlineRadio2" value="2" checked>
-                <label class="form-check-label" for="inlineRadio2">Author</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="option" id="inlineRadio3" value="3">
-                <label class="form-check-label" for="inlineRadio3">Genre</label>
-              </div>
-            </div>
-        </div>
-        
-        <div class="m-1">
-          <button type="submit" value="Search" class=" btn btn-primary shadow">Search</button>
-          
-        </div>
-      </form>
+  <section id="title">
+    <div class="title-wrapper m-4">
+      <h1 class="h1">Books by {{author.name}}</h1>
     </div>
   </section>
   <section id="books">
@@ -61,14 +26,16 @@
                 <thead>
                   <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Author's name</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author/s</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for author in author_list %}
+                  {% for book in book_list %}
                   <tr scope="row">
-                    <td><a class="link-dark" href="{% url 'library:author-detail' author.id %}">{{author.id}}</a></td>
-                    <td><a class="link-dark" href="{% url 'library:author-detail' author.id %}">{{author.name}}</a></td>
+                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.id}}</a></td>
+                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.title}}</a></td>
+                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.authors.all|join:", "}}</a></td>
                   </tr>
                   {% endfor %}
                 </tbody>

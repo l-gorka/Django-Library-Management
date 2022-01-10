@@ -101,6 +101,41 @@ class BookDetailView(DetailView):
         return context
 
 
+class AuthorDetailView(ListView):
+    model = Book
+    template_name = 'author-detail.html'
+    paginate_by = 20
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        author = Author.objects.get(id=self.kwargs['pk'])
+        context['author'] = author
+        return context
+
+    def get_queryset(self, **kwargs):
+        author = Author.objects.get(id=self.kwargs['pk'])
+        book_list = Book.objects.filter(authors=author)
+        return book_list
+
+
+class GenreDetailView(ListView):
+    model = Book
+    template_name = 'genre-detail.html'
+    paginate_by = 20
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        genre = Genre.objects.get(id=self.kwargs['pk'])
+        print(genre)
+        context['genre'] = genre
+        return context
+
+    def get_queryset(self, **kwargs):
+        genre = Genre.objects.get(id=self.kwargs['pk'])
+        book_list = Book.objects.filter(genre=genre)
+        return book_list
+
+
 def order_create(request, **kwargs):
     if not request.user.is_authenticated:
         messages.warning(request, f'You must be logged in to create an order.')
