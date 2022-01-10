@@ -305,11 +305,7 @@ class ManageBooks(StaffRequiredMixIn, ListView):
     def get_queryset(self):
         search = self.request.GET.get('search')
         if search:
-            query = Q(title__icontains=search)
-            query.add(Q(authors__name__icontains=search), Q.OR)
-            query.add(Q(genre__genre_name__icontains=search), Q.OR)
-            book_list = Book.objects.filter(
-                query).select_related().distinct().order_by('title')
+            book_list = Book.objects.filter(title__icontains=search)
         else:
             book_list = Book.objects.all().distinct().order_by('title')
         return book_list
