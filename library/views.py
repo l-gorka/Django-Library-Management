@@ -5,7 +5,7 @@ from django.urls.base import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
 from django.views.generic.edit import DeleteView, UpdateView
-from library.models import Author, Book, BookItem, Order, PickUpSite, StatusChoices
+from library.models import Author, Book, Genre, BookItem, Order, PickUpSite, StatusChoices
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from datetime import datetime, timedelta
@@ -14,22 +14,7 @@ from .forms import BookForm
 from django.urls import reverse_lazy
 
 
-class BookListView(ListView):
-    model = Book
-    template_name = 'book-list.html'
-    paginate_by = 20
-
-    def get_queryset(self):
-        search = self.request.GET.get('search')
-        if search:
-            query = Q(title__icontains=search)
-            query.add(Q(authors__name__icontains=search), Q.OR)
-            query.add(Q(genre__genre_name__icontains=search), Q.OR)
-            book_list = Book.objects.filter(
-                query).distinct().order_by('title')
-        else:
-            book_list = Book.objects.all().distinct().order_by('title')
-        return book_list
+class BaseListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -40,6 +25,67 @@ class BookListView(ListView):
             context['search'] = ''
         context['query_length'] = self.get_queryset().count()
         return context
+
+    def get_queryset(self):
+        search = self.request.GET.get('search')
+        if search:
+            if self.model == Book:
+                obj_list = Book.objects.filter(title__icontains=search)
+            elif self.model == Author:
+                obj_list = Author.objects.filter(name__icontains=search)
+            elif self.model == Genre:
+                obj_list = Genre.objects.filter(genre_name__icontains=search)
+        else:
+            obj_list = self.model.objects.all().distinct()
+        return obj_list
+
+
+class BookListView(BaseListView):
+    model = Book
+    template_name = 'book-list.html'
+    paginate_by = 20
+
+    def dispatch(self, request, *args, **kwargs):
+        search = self.request.GET.get('search')
+        option = self.request.GET.get('option')
+        if option == '2':
+            return redirect(reverse('library:authors-list')+f'?search={search}')
+        elif option == '3':
+            return redirect(reverse('library:genres-list')+f'?search={search}')
+        else:
+            return super().dispatch(request, *args, **kwargs)
+
+
+class AuthorsListView(BaseListView):
+    model = Author
+    template_name = 'authors-list.html'
+    paginate_by = 20
+
+    def dispatch(self, request, *args, **kwargs):
+        search = self.request.GET.get('search')
+        option = self.request.GET.get('option')
+        if option == '1':
+            return redirect(reverse('library:book-list')+f'?search={search}')
+        elif option == '3':
+            return redirect(reverse('library:genres-list')+f'?search={search}')
+        else:
+            return super().dispatch(request, *args, **kwargs)
+
+
+class GenresListView(BaseListView):
+    model = Genre
+    template_name = 'genres-list.html'
+    paginate_by = 20
+
+    def dispatch(self, request, *args, **kwargs):
+        search = self.request.GET.get('search')
+        option = self.request.GET.get('option')
+        if option == '1':
+            return redirect(reverse('library:book-list')+f'?search={search}')
+        elif option == '2':
+            return redirect(reverse('library:authors-list')+f'?search={search}')
+        else:
+            return super().dispatch(request, *args, **kwargs)
 
 
 class BookDetailView(DetailView):

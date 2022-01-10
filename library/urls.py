@@ -21,4 +21,7 @@ urlpatterns = [
     path('item/<int:pk>/', views.order_create, name='order-create'),
     path('item/<int:book>/delete/<int:pk>', views.DeleteBookItem.as_view(), name='delete-book-item'),
 
+    path('authors/', views.AuthorsListView.as_view(), name='authors-list'),
+    path('genres/', views.GenresListView.as_view(), name='genres-list'),
+
 ]
