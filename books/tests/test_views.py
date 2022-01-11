@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from datetime import datetime
 
 from library.models import Author, BookItem, Genre, Book, Order, PickUpSite
+from library.views import BaseListView
 from .base_tests import BaseTestData, PaginationTestData, get_current_book_id, make_order, get_or_none
 
 
@@ -41,10 +42,8 @@ class UserBooksViewTest(PaginationTestData):
         order2.status = 2
         order2.save()
 
-        response = self.client.get(reverse('library:user-books'))
-        self.assertEqual(len(response.context.get('reserved')), 20)
-        self.assertEqual(len(response.context.get('waiting')), 1)
-        self.assertEqual(len(response.context.get('on_loan')), 1)
+        response = self.client.get(reverse('library:user-books')+'?page=2')
+        self.assertEqual(len(response.context.get('object_list')), 2)
 
 
 class OrderDeleteViewTest(BaseTestData):
@@ -199,3 +198,62 @@ class ManageOrdersViewTest(PaginationTestData):
             reverse('library:manage-orders') + '?search=user2&status=1&page=2'
         )
         self.assertEqual(len(response.context.get('order_list')), 2)
+
+
+class AuthorsListViewTest(BaseTestData):
+    def setUp(self):
+        login = self.client.login(username='user', password='test4321')
+        Author.objects.create(name='JRR Tolkien')
+
+    def test_authors_show_on_the_page(self):
+
+        response = self.client.get(reverse('library:authors-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context.get('author_list')), 2)
+
+    def test_search_for_specified_author(self):
+        response = self.client.get(
+            reverse('library:authors-list')+'?search=rowling')
+        self.assertEqual(len(response.context.get('author_list')), 1)
+        self.assertEqual(str(response.context.get(
+            'author_list')[0]), 'J. K. Rowling')
+
+
+class GenresListViewTest(BaseTestData):
+    def setUp(self):
+        login = self.client.login(username='user', password='test4321')
+        Genre.objects.create(genre_name='Science')
+
+    def test_genres_show_on_the_page(self):
+        response = self.client.get(reverse('library:genres-list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context.get('genre_list')), 2)
+
+
+    def test_search_for_specified_genre(self):
+        response = self.client.get(
+            reverse('library:genres-list')+'?search=science')
+        self.assertEqual(len(response.context.get('genre_list')), 1)
+        self.assertEqual(str(response.context.get(
+            'genre_list')[0]), 'Science')
+
+
+class AuthorDetailViewTest(BaseTestData):
+    def setUp(self):
+        login = self.client.login(username='user', password='test4321')
+
+    def test_books_of_specified_author_visible(self):
+        author = Author.objects.all()[0]
+        
+        response = self.client.get(author.get_absolute_url())
+        self.assertEqual(response.context.get('book_list')[0].__str__(), 'Harry Potter')
+
+class GenreDetailViewTest(BaseTestData):
+    def setUp(self):
+        login = self.client.login(username='user', password='test4321')
+
+    def test_books_with_specified_genre_visible(self):
+        genre = Genre.objects.all()[0]
+        
+        response = self.client.get(genre.get_absolute_url())
+        self.assertEqual(response.context.get('book_list')[0].__str__(), 'Harry Potter')

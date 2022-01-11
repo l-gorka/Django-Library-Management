@@ -14,6 +14,12 @@ from .forms import BookForm
 from django.urls import reverse_lazy
 
 
+class StaffRequiredMixIn(LoginRequiredMixin, UserPassesTestMixin):
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+
 class BaseListView(ListView):
 
     def get_context_data(self, **kwargs):
@@ -234,12 +240,6 @@ class OrderUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             messages.warning(
                 request, f'You are not allowed to modify this order.')
             return redirect('library:book-list')
-
-
-class StaffRequiredMixIn(LoginRequiredMixin, UserPassesTestMixin):
-
-    def test_func(self):
-        return self.request.user.is_staff
 
 
 class ManageOrders(StaffRequiredMixIn, ListView):

@@ -42,15 +42,17 @@ class BaseTestData(TestCase):
         group = Group.objects.get_or_create(name='moderators')
 
         author = Author.objects.create(
-            name='test_author'
+            name='J. K. Rowling'
         )
         genre = Genre.objects.create(
-            genre_name='test_genre'
+            genre_name='Fantasy'
         )
-        book = Book.objects.create(isbn='asd123', title='Hari pota')
+        book = Book.objects.create(isbn='asd123', title='Harry Potter')
         book_item = BookItem.objects.create(
             book_item=book
         )
+        book.authors.add(author)
+        book.genre.add(genre)
         pick_site = PickUpSite.objects.create(site='main', adress='test_adress')
         order = Order.objects.create(user=user, item=book_item, status=0, date_created=datetime.now())
 
