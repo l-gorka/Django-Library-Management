@@ -56,6 +56,7 @@
             <div class="card-body lh-1">
               <p class="">User: {{order.user.username}}</p>
               <p class=" text-truncate">Item: #{{order.item.id}}</p>
+              <p>Site: {{order.pick_up_site}}</p>
               <p>Date created: {{order.date_created}}</p>
               <p>Date loaned: {% if order.date_picked %}{{order.date_picked}}{% else %} - {%endif%}</p>
               <p>Date expiry: {% if order.date_expiry %}{{order.date_expiry}}{% else %} - {%endif%}</p>

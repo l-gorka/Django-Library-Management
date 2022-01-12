@@ -36,13 +36,13 @@ class BaseListView(ListView):
         search = self.request.GET.get('search')
         if search:
             if self.model == Book:
-                obj_list = Book.objects.filter(title__icontains=search)
+                obj_list = Book.objects.filter(title__icontains=search).order_by('id')
             elif self.model == Author:
-                obj_list = Author.objects.filter(name__icontains=search)
+                obj_list = Author.objects.filter(name__icontains=search).order_by('id')
             elif self.model == Genre:
-                obj_list = Genre.objects.filter(genre_name__icontains=search)
+                obj_list = Genre.objects.filter(genre_name__icontains=search).order_by('id')
         else:
-            obj_list = self.model.objects.all().distinct()
+            obj_list = self.model.objects.all().distinct().order_by('id')
         return obj_list
 
 
@@ -120,7 +120,7 @@ class AuthorDetailView(ListView):
 
     def get_queryset(self, **kwargs):
         author = Author.objects.get(id=self.kwargs['pk'])
-        book_list = Book.objects.filter(authors=author)
+        book_list = Book.objects.filter(authors=author).order_by('id')
         return book_list
 
 
@@ -132,13 +132,12 @@ class GenreDetailView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         genre = Genre.objects.get(id=self.kwargs['pk'])
-        print(genre)
         context['genre'] = genre
         return context
 
     def get_queryset(self, **kwargs):
         genre = Genre.objects.get(id=self.kwargs['pk'])
-        book_list = Book.objects.filter(genre=genre)
+        book_list = Book.objects.filter(genre=genre).order_by('id')
         return book_list
 
 
@@ -305,9 +304,9 @@ class ManageBooks(StaffRequiredMixIn, ListView):
     def get_queryset(self):
         search = self.request.GET.get('search')
         if search:
-            book_list = Book.objects.filter(title__icontains=search)
+            book_list = Book.objects.filter(title__icontains=search).order_by('id')
         else:
-            book_list = Book.objects.all().distinct().order_by('title')
+            book_list = Book.objects.all().distinct().order_by('id')
         return book_list
 
     def get_context_data(self, **kwargs):

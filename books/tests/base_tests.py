@@ -53,6 +53,7 @@ class BaseTestData(TestCase):
         )
         book.authors.add(author)
         book.genre.add(genre)
+        
         pick_site = PickUpSite.objects.create(site='main', adress='test_adress')
         order = Order.objects.create(user=user, item=book_item, status=0, date_created=datetime.now())
 
