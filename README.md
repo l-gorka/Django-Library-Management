@@ -22,3 +22,7 @@ To do list:
 + Added BaseListView class, from which subclasses inherit get_queryset() and get_context_data() methods.
 + Added templates for author and genre views.
 + Wrote few unit tests to cover changes made in last time.
+
+### 0.24
+
++ Added pre_delete signal to make book aviable for loan again, after order associated with with the book has been deleted.

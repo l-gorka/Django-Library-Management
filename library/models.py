@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 
 
 class AuthorManager(models.Manager):
@@ -140,11 +140,25 @@ User._meta.get_field('email')._unique = True
 
 def order_save(sender, instance, **kwargs):
     book_item = BookItem.objects.get(id=instance.item.id)
+
+    if instance.status == 2:
+        book_item.issued_to = instance.user
+        book_item.issue_date = instance.date_picked
+        book_item.expiry_date = instance.date_expiry
+        book_item.save()
+
     if instance.status == 3:
         book_item.issued_to = None
         book_item.issue_date = None
         book_item.expiry_date = None
         book_item.save()
 
+def order_delete(sender, instance, **kwargs):
+    book_item = BookItem.objects.get(id=instance.item.id)
+    book_item.issued_to = None
+    book_item.issue_date = None
+    book_item.expiry_date = None
+    book_item.save()
 
 post_save.connect(order_save, sender=Order)
+pre_delete.connect(order_delete, sender=Order)
