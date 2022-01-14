@@ -35,7 +35,7 @@
           </div>
           <ul class="list-group">
             {% for item in items %}
-            <li class="list-group-item d-sm-flex justify-content-between">
+            <li id="copy-{{forloop.counter}}"class="list-group-item d-sm-flex justify-content-between">
               <div>
                 <span>Book ID: {{ item.pk }}</span>
               </div>
@@ -50,12 +50,12 @@
                       <option value="{{ site.id }}">{{ site.site }}</option>
                       {% endfor %}
                     </select>
-                    <button class=" btn btn-sm btn-outline-primary me-2">Request</button>
+                    <button id="btn-submit" class=" btn btn-sm btn-outline-primary me-2">Request</button>
 
                   </div>
                 </form>
                 {% if user.is_staff %}
-                <a href="{% url 'library:delete-book-item' book=book.id pk=item.id%}"><button
+                <a id="btn-delete" href="{% url 'library:delete-book-item' book=book.id pk=item.id%}"><button
                     class="btn btn-sm btn-outline-danger">Delete</button></a>
                 {% endif %}
               </div>

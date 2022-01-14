@@ -59,9 +59,9 @@
                 <tbody>
                   {% for book in book_list %}
                   <tr scope="row">
-                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.id}}</a></td>
-                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.title}}</a></td>
-                    <td><a class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.authors.all|join:", "}}</a></td>
+                    <td><a id="book-id-{{forloop.counter}}" class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.id}}</a></td>
+                    <td><a id="book-title-{{forloop.counter}}" class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.title}}</a></td>
+                    <td><a id="book-authors-{{forloop.counter}}" class="link-dark" href="{% url 'library:book-detail' book.id %}">{{book.authors.all|join:", "}}</a></td>
                   </tr>
                   {% endfor %}
                 </tbody>

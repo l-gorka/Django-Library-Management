@@ -44,6 +44,10 @@ class BaseSeleniumTestData(StaticLiveServerTestCase):
 
         pick_site = PickUpSite.objects.create(
             site='main', adress='test_adress')
+        pick2 = PickUpSite.objects.create(
+            site='secondary',
+            adress='some other adress'
+        )
         order = Order.objects.create(
             user=user, item=book_item, status=0, date_created=datetime.now())
 
