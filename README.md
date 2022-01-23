@@ -19,7 +19,7 @@
 
 ### 0.24
 
-+ Added pre_delete signal to make book aviable for loan again, after order associated with with the book has been deleted.
++ Added pre_delete signal to make book aviable for loan again, after order associated with the book has been deleted.
 
 ### 0.25
 

@@ -1,7 +1,6 @@
 from django.urls import reverse
-from library.models import Book
+from library.models import Book, BookItem
 from .base_tests import BaseTestData
-
 
 
 class UrlsUnauthenticatedUser(BaseTestData):
@@ -16,11 +15,12 @@ class UrlsUnauthenticatedUser(BaseTestData):
 
     def test_book_detail_accessible(self):
         book = Book.objects.all()[0].id
-        response = self.client.get(reverse('library:book-detail', args=(book,)))
+        response = self.client.get(
+            reverse('library:book-detail', args=(book,)))
         self.assertEqual(response.status_code, 200)
 
     def test_order_create_redirect(self):
-        response = self.client.get(reverse('library:order-create', args=(1,)))
+        response = self.client.post(reverse('library:order-create', args=(1,)), {'pk': 1})
         self.assertEqual(response.status_code, 302)
 
     def test_order_delete_redirect(self):
@@ -58,5 +58,3 @@ class UrlsUnauthenticatedUser(BaseTestData):
     def test_change_password_redirect(self):
         response = self.client.get(reverse('password-change'))
         self.assertEqual(response.status_code, 302)
-
-

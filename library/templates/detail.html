@@ -11,12 +11,12 @@
       <div class="col-12 col-lg-8 mx-2">
         <div class="detail-wrapper card p-3 mb-2 mb-lg-4 shadow">
           <p class="">Author(s): {% for author in book.authors.all %}
-            <a href="{%url 'library:book-list'%}?search={{ author|urlencode }}">
+            <a href="{%url 'library:authors-list'%}?search={{ author|urlencode }}">
               {{author}}{% if notforloop.last%}, {% else%} {% endif %}</a>
             {% endfor %}
           </p>
           <p class="">Genre: {% for genre in book.genre.all %}
-            <a href="{%url 'library:book-list'%}?search={{ genre|urlencode }}">
+            <a href="{%url 'library:genres-list'%}?search={{ genre|urlencode }}">
               {{genre}}{% if notforloop.last%}, {% else%} {% endif %}</a>
             {% endfor %}
           </p>
