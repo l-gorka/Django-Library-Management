@@ -153,6 +153,8 @@ EMAIL_HOST_USER = '7d296c3d412a5b'
 EMAIL_HOST_PASSWORD = '23ddf980c0fac8'
 EMAIL_PORT = '2525'
 
-CSRF_TRUSTED_ORIGINS = ['https://shielded-cliffs-78070.herokuapp.com/']
-CSRF_COOKIE_DOMAIN = '.shielded-cliffs-78070.herokuapp.com'
+
+CSRF_COOKIE_DOMAIN = '.herokuapp.com'
 django_heroku.settings(locals())
+
+CSRF_TRUSTED_ORIGINS = ['https://shielded-cliffs-78070.herokuapp.com/']
