@@ -1,10 +1,6 @@
-from django.http import response
-from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User, Group
-from datetime import datetime
-
-from .base_tests import BaseTestData, get_current_book_id
+from library.models import Book
+from .base_tests import BaseTestData
 
 
 
@@ -19,7 +15,8 @@ class UrlsUnauthenticatedUser(BaseTestData):
         self.assertEqual(response.status_code, 302)
 
     def test_book_detail_accessible(self):
-        response = self.client.get(reverse('library:book-detail', args=(1,)))
+        book = Book.objects.all()[0].id
+        response = self.client.get(reverse('library:book-detail', args=(book,)))
         self.assertEqual(response.status_code, 200)
 
     def test_order_create_redirect(self):

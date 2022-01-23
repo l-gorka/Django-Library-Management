@@ -1,7 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import request
 from django.shortcuts import redirect, render
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import RegisterForm
@@ -23,13 +22,14 @@ def register(request):
                 email = request.POST.get('email')
                 username = form.cleaned_data.get('username')
                 messages.success(request, f'Added new account for {username}.')
+                '''
                 send_mail(
                     'Library Management',
                     'Account has been created',
                     'lms@example.com',
                     [email],
                     fail_silently=False,
-                )
+                )'''
                 return redirect('library:book-list')
         else:
             print('e')

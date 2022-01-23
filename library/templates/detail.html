@@ -47,7 +47,7 @@
                     <input type="hidden" name="pk" value="{{item.pk }}">
                     <select name="site" class=" form-select form-select-sm mx-2" id="site">
                       {% for site in sites %}
-                      <option value="{{ site.id }}">{{ site.site }}</option>
+                      <option id="site-{{forloop.counter}}" value="{{ site.id }}">{{ site.site }}</option>
                       {% endfor %}
                     </select>
                     <button id="btn-submit" class=" btn btn-sm btn-outline-primary me-2">Request</button>

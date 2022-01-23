@@ -1,10 +1,4 @@
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.keys import Keys
-from django.urls import reverse
-from time import sleep
-from library.models import Book
-from django.contrib.auth.models import User
-
 from .base_selenium_tests import BaseSeleniumTestData
 
 
@@ -61,9 +55,9 @@ class AccountsTest(BaseSeleniumTestData):
         self.do_login('user', 'test4321')
 
         # The user navigates to book detail page and requests book loan. Then is redirected to book list page.
-        self.browser.get(f'{self.live_server_url}/list/')
+        self.browser.get(f'{self.live_server_url}')
         self.browser.find_element_by_id('book-title-1').click()
-        Select(self.browser.find_element_by_id('site')).select_by_value('2')
+        Select(self.browser.find_element_by_id('site')).select_by_visible_text('secondary')
         self.browser.find_element_by_id('btn-submit').click()
 
         alert = self.browser.find_element_by_class_name('alert')

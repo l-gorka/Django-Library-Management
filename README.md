@@ -1,12 +1,6 @@
-# Django-Library-Management-System
+# Django-Library-Management
 
-To do list:
-- [x] Script for loading data from csv
-- [x] Models and search
-- [ ] Profiles
-- [ ] Auth, password, etc
-- [ ] Sending emails
-- [ ] Book issue
+
 
 ### 0.15
 
@@ -26,3 +20,7 @@ To do list:
 ### 0.24
 
 + Added pre_delete signal to make book aviable for loan again, after order associated with with the book has been deleted.
+
+### 0.25
+
++ Added functional tests for /users/.

@@ -1,6 +1,5 @@
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import request
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls.base import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Q
@@ -142,9 +141,10 @@ class GenreDetailView(ListView):
 
 
 def order_create(request, **kwargs):
+    book_pk = BookItem.objects.get(pk=request.POST.get('pk')).book_item.pk
     if not request.user.is_authenticated:
         messages.warning(request, f'You must be logged in to create an order.')
-        return redirect('login')
+        return redirect(f'/login/?next=/books/{book_pk}/')
     else:
         if request.method == 'POST':
             book_item = BookItem.objects.get(pk=request.POST.get('pk'))

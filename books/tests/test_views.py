@@ -1,11 +1,8 @@
-from django.http import response
 from django.urls import reverse
 from django.contrib.auth.models import User
-from datetime import datetime
 
 from library.models import Author, BookItem, Genre, Book, Order, PickUpSite
-from library.views import BaseListView
-from .base_tests import BaseTestData, PaginationTestData, get_current_book_id, make_order, get_or_none
+from .base_tests import BaseTestData, PaginationTestData, make_order, get_or_none
 
 
 class BookListViewTest(PaginationTestData):
@@ -67,7 +64,7 @@ class OrderDeleteViewTest(BaseTestData):
 
         response = self.client.post(
             reverse('library:order-delete', args=(id,)))
-        self.assertEqual(response.url, '/list/')
+        self.assertEqual(response.url, '/')
         deleted = get_or_none(Order, id=id)
         self.assertNotEqual(deleted, None)
 
@@ -95,7 +92,7 @@ class OrderUpdateViewTest(BaseTestData):
 
         response = self.client.post(
             reverse('library:order-update', args=(id,)), {'pick_up_site': site.id})
-        self.assertEqual(response.url, '/list/')
+        self.assertEqual(response.url, '/')
         updated = Order.objects.get(id=id)
         self.assertEqual(updated.pick_up_site, None)
 

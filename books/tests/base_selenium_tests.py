@@ -49,7 +49,7 @@ class BaseSeleniumTestData(StaticLiveServerTestCase):
             adress='some other adress'
         )
         order = Order.objects.create(
-            user=user, item=book_item, status=0, date_created=datetime.now())
+            user=user, item=book_item, status=0, date_created=datetime.now(), )
 
         super().setUpClass()
 
