@@ -157,4 +157,4 @@ EMAIL_PORT = '2525'
 CSRF_COOKIE_DOMAIN = '.herokuapp.com'
 django_heroku.settings(locals())
 
-CSRF_TRUSTED_ORIGINS = ['https://shielded-cliffs-78070.herokuapp.com/']
+CSRF_TRUSTED_ORIGINS = ['https://*.herokuapp.com']
