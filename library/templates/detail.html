@@ -35,12 +35,12 @@
           </div>
           <ul class="list-group">
             {% for item in items %}
-            <li id="copy-{{forloop.counter}}"class="list-group-item d-sm-flex justify-content-between">
-              <div>
+            <li id="copy-{{forloop.counter}}"class="list-group-item d-sm-flex justify-content-sm-between">
+              <div class="d-flex justify-content-center justify-content-sm-start mb-2 mb-sm-0">
                 <span>Book ID: {{ item.pk }}</span>
               </div>
               {% if item.issued_to == None %}
-              <div class="form-wrapper d-flex justify-content-end">
+              <div class="form-wrapper d-flex justify-content-center justify-content-sm-end">
                 <form action="{%url 'library:order-create' item.pk %}" class=" form-control-sm m-0 p-0" method="POST">
                   {% csrf_token %}
                   <div class="d-flex">
