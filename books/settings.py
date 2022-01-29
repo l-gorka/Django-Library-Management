@@ -158,3 +158,5 @@ CSRF_COOKIE_DOMAIN = '.herokuapp.com'
 django_heroku.settings(locals())
 
 CSRF_TRUSTED_ORIGINS = ['https://*.herokuapp.com']
+
+CSRF_COOKIE_SECURE = True
