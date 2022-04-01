@@ -1,26 +1,80 @@
-# Django-Library-Management
+# Library management
+
+- [General info](#general-info)
+- [Screenshots](#screenshots)   
+- [Features](#features)
+- [Technologies](#technologies)
+- [Setup & testing](#setup)  
+
+<a name="general-info"></a>
+# General info
+
+This is my first web app created with the Django web framework. Primarily it was designed to familiarize me with core web development concepts such as request/response cycle, URL routing, working with the ORM. While writing this app I also learned about pagination, testing, providing different roles for moderators and regular users.
+
+<a name="screenshots"></a>
+# Screenshots:
+
+![Home page](https://res.cloudinary.com/dgmcox/image/upload/v1648759037/library-home_tunruz.png)
+<br>
+
+![Manage orders](https://res.cloudinary.com/dgmcox/image/upload/v1648759037/library-orders_xe9lsu.png)
+
+<br>
+
+![Detail page](https://res.cloudinary.com/dgmcox/image/upload/v1648759038/library-detail_yr2vdq.png)
+
+<a name="features"></a>
+# Features:
+
+The app is designed to help maintain the database of books and track the records of orders. 
+
+As a user, you have the following options:
+register an account
+- search for a book by title, author or genre
+- request for the book at the chosen site
+- see the status of your orders
+- change password
+
+As a moderator you can:
+- add, edit or delete the book
+- add or remove book copy
+- add pick up site
+- change the status of the order
+
+<a name="technologies"></a>
+# Technologies:
+
+- Django
+- PostgreSQL
+- unittest
+- Docker
+- docker-compose
 
 
+<a name="setup"></a>
+# Setup & testing:
 
-### 0.15
+## Setup
 
-+ Since there is a lot of authors and genres out there, the MultipleChoiceField was generally a bad option since it loaded thousands of values. I modified manager and form so now it uses TextField and comma separated string to add or modify associated ManyToMany objects.
+To run this project locally:
+```bash
+$ docker-copmose up
+```
 
-### 0.22
+After the image is build and the migrations are applied, the app shoud be accessible at localhost:8000.
 
-+ Added better script for loading csv file to database. Now it runs in 2 minutes instead of 50 to load 100k records.
 
-### 0.23
+To populate database with some records, run:
+```bash
+$ docker exec -it books_web_1 bash
+$ python manage.py runscript fast_load --script-args books-min.csv
 
-+ With 100k records, complex search with Q object turned out to be very slow at times. I changed the search method by adding separate views to search by title, author, or genre. It's much faster and more convinient for user.
-+ Added BaseListView class, from which subclasses inherit get_queryset() and get_context_data() methods.
-+ Added templates for author and genre views.
-+ Wrote few unit tests to cover changes made in last time.
+```
 
-### 0.24
+## Tests
 
-+ Added pre_delete signal to make book aviable for loan again, after order associated with the book has been deleted.
-
-### 0.25
-
-+ Added functional tests for /users/.
+Some tests on the urls and the views are also included. To run them:
+```bash
+$ docker exec -it books_web_1 bash
+$ python manage.py test
+```
