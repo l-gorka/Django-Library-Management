@@ -12,19 +12,16 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-import django_heroku
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u((j$75bd@g&d+8=e=(wi_=og6=xrr$y_9zvk#_xw89&)'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -86,6 +83,18 @@ WSGI_APPLICATION = 'books.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_NAME'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': 'db',
+        'PORT': 5432,
+    }
+}
+
+"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'search',
         'USER': 'postgres',
         'PASSWORD': 'Pass2020!',
@@ -93,6 +102,7 @@ DATABASES = {
         'PORT': '5432'
     }
 }
+"""
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -128,13 +138,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-STATIC_URL = '/static/'
-
-# Extra places for collectstatic to find static files.
-STATICFILES_DIRS = [
-    os.path.join(PROJECT_ROOT, 'static'),
-]
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -152,10 +156,3 @@ EMAIL_HOST = 'smtp.mailtrap.io'
 EMAIL_HOST_USER = '7d296c3d412a5b'
 EMAIL_HOST_PASSWORD = '23ddf980c0fac8'
 EMAIL_PORT = '2525'
-
-
-django_heroku.settings(locals())
-
-CSRF_TRUSTED_ORIGINS = ['https://*.herokuapp.com']
-
-CSRF_COOKIE_SECURE = True
