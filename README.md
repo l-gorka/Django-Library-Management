@@ -46,6 +46,7 @@ As a moderator you can:
 
 - Django
 - PostgreSQL
+- Bootstrap
 - unittest
 - Docker
 - docker-compose
